@@ -26,6 +26,11 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
             services.AddScoped<IProject, ProjectRepository>();
             services.AddScoped<IProjectEmployee,ProjectEmployeeRepository>();
             services.AddScoped<ILogin,LoginRepository>();
+            services.AddScoped<ITimeSheetSummary,TimeSheetRepository>();
+            services.AddScoped<ILeaveRequest, LeaveRequestRepository>();
+            services.AddScoped<ILeaveBalance, LeaveBalanceRepository>();
+            services.AddScoped<IOnboarding,OnboardingRepository>();
+            services.AddScoped<IProjectTasks, ProjectTasksRepository>();
 
             return services;
         }

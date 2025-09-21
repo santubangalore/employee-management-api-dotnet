@@ -11,5 +11,9 @@
         public string Gender { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
+        public string ReportingToName { get; set; } = string.Empty;
+        public string LastUpdatedBy {  get; set; }= string.Empty;
+
     }
 }

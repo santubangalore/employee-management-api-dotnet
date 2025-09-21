@@ -57,6 +57,13 @@ namespace EmployeeManagement.Infrastructure.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<Employee>> GetAllExcluding(int EmployeeId)
+        {
+            var emplist = await dbcontext.Employees.AsNoTracking().ToListAsync();
+            var result = emplist.Where(x => x.EmployeeId != EmployeeId);
+            return result;
+        }
+
         public async Task<Employee> GetByAsync(Expression<Func<Employee, bool>> predicate)
         {
             try

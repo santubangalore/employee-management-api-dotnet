@@ -2,12 +2,7 @@
 using EmployeeManagement.Application.Records;
 using EmployeeManagement.Domain.Entities;
 using EmployeeManagement.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EmployeeManagement.Infrastructure.Repositories
 {

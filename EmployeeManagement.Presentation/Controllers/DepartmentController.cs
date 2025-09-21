@@ -2,8 +2,9 @@
 using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace EmployeeManagement.Presentation.Controllers
 {
@@ -12,6 +13,7 @@ namespace EmployeeManagement.Presentation.Controllers
     public class DepartmentController(IParentDepartment parentDeptInterface, IChildDepartment childDeptInterface) : ControllerBase
     {
         [HttpGet("GetParentDepartments")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> GetParentDeprtments()
         {
             var result=await parentDeptInterface.GetAllAsync();
@@ -20,6 +22,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetParentDepartment/{DepartmentId}")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> GetParentDept(int DepartmentId)
         {
             if (DepartmentId <= 0) return BadRequest("DepartmentId cannot be 0 or less");    
@@ -30,6 +33,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPost("CreateParentDepartment")]
+        [Authorize]
         public async Task<ActionResult> AddParentDepartment(ParentDeptDTO parentDeptDto)
         {
             if (!ModelState.IsValid) { return BadRequest("Invalid Data"); }
@@ -40,6 +44,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetChildDepartments")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> GetChildDeprtments()
         {
             var result = await childDeptInterface.GetAllAsync();
@@ -50,6 +55,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetChildDeptByParentDept/{ParentDepartmentId}")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> GetChildDeptByParentDept(int ParentDepartmentId)
         {
             if (ParentDepartmentId <= 0) return BadRequest("ParentDeptId cannot be 0 or less");
@@ -61,6 +67,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetChildDepartment/{ChildDeptId}")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> GetChildDept(int ChildDeptId)
         {
             if (ChildDeptId <= 0) return BadRequest("ChildDept Id cannot be 0 or less");
@@ -73,6 +80,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPost("CreateChildDepartment")]
+        [Authorize]
         public async Task<ActionResult> CreateChildDepartment(ChildDeptDTO childDeptDto)
         {
             if (!ModelState.IsValid) { return BadRequest("Invalid Data"); }
@@ -83,27 +91,49 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPut("UpdateParentDept")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> UpdateParentDept(ParentDeptDTO parentDeptDto)
         {
             if (parentDeptDto.DepartmentName.Trim() == "" || parentDeptDto.DepartmentName ==null) { return BadRequest("dept name cannot be blank"); }
-            if (!ModelState.IsValid) { return BadRequest("Invalid Employee object"); }
+            if (!ModelState.IsValid) { return BadRequest("Invalid Parent Dept object"); }
             var dept = ConvertDepts.ConvertToParentDepartment(parentDeptDto);
             var result = await parentDeptInterface.UpdateAsync(dept);
             return result.flag? Ok(new ResponseMessage("Updated",true,result)):BadRequest(new ResponseMessage("Error updating",false,result));
         }
 
-
         [HttpPut("UpdateChildDept")]
+        [Authorize]
         public async Task<ActionResult<ResponseMessage>> UpdateChildDept( ChildDeptDTO childDeptDto)
         {
             if (childDeptDto.DepartmentName.Trim() == "" || childDeptDto.DepartmentName==null) { return BadRequest("dept name cannot be blank"); }
-            if (!ModelState.IsValid) { return BadRequest("Invalid Employee object"); }
+            if (!ModelState.IsValid) { return BadRequest("Invalid Child Dept object"); }
             var dept = ConvertDepts.ConvertToChildDepartment(childDeptDto);
             var result = await childDeptInterface.UpdateAsync(dept);
             return result.flag ? Ok(new ResponseMessage("Updated", true, result)) : BadRequest(new ResponseMessage("Error updating", false, result));
-
         }
 
+        [HttpDelete("DeleteChildDept/{ChildDeptId}")]
+        [Authorize(Roles ="Admin")]
+        public async Task<ActionResult<ResponseMessage>> DeleteChildDept(int ChildDeptId)
+        {
+            if (ChildDeptId<=0) { return BadRequest("Wrong Dept Id"); }
 
+            var childDept = await childDeptInterface.FindByIdAsync(ChildDeptId);
+            if (childDept is null) return NotFound("Child department Not Found");
+            var result = await childDeptInterface.DeleteAsync(childDept);
+            return result.flag ? Ok(new ResponseMessage("Deleted", true, result)) : BadRequest(new ResponseMessage("Error deleting", false, result));
+        }
+
+        [HttpDelete("DeleteParentDept/{ParentDeptId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ResponseMessage>> DeleteParentDept(int ParentDeptId)
+        {
+            if (ParentDeptId <= 0) { return BadRequest("Wrong Dept Id"); }
+
+            var parentDept = await parentDeptInterface.FindByIdAsync(ParentDeptId);
+            if (parentDept is null) return NotFound("Parent department Not Found");
+            var result = await parentDeptInterface.DeleteAsync(parentDept);
+            return result.flag ? Ok(new ResponseMessage("Deleted", true, result)) : BadRequest(new ResponseMessage("Error deleting", false, result));
+        }
     }
 }

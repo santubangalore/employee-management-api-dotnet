@@ -19,7 +19,6 @@ namespace EmployeeManagement.Presentation.Controllers
             return Ok(leaveTypesDto);
         }
 
-
         [HttpPost("CreateProject")]
         public async Task<ActionResult> CreateProject(ProjectDTO project)
         {

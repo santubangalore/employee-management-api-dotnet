@@ -3,5 +3,5 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface ILeaveApprovalStep:IGenericInterface<LeaveApprovalStep> { }
+    public interface IProjectTasks :IGenericInterface<ProjectTasks> {}
 }

@@ -23,7 +23,10 @@ namespace EmployeeManagement.Application.Conversions
                 Gender = employee.Gender,
                 Role = employee.Role,
                 CreatedDate = employee.CreatedDate,
-
+                ReportingTo = employee.ReportingTo,
+                LastUpdatedBy = employee.LastUpdatedBy,
+                LastUpdatedDate = DateTime.UtcNow,
+                EmployeeStatus = employee.EmployeeStatus,
             };
 
             string passwordHash = new PasswordHasher<Employee>().HashPassword(Emp, employee.Password);
@@ -31,8 +34,9 @@ namespace EmployeeManagement.Application.Conversions
             return Emp;
         }
 
-        public static GetEmployeeDTO ConvertToDto(Employee employee,ChildDepartment childDept)
+        public static GetEmployeeDTO ConvertToDto(Employee employee,ChildDepartment childDept,IEnumerable<Employee> employees)
         {
+            var reportingTo = employees.Where(q=>q.EmployeeId == employee.ReportingTo).SingleOrDefault();
             if (employee is null) return null;
             return new GetEmployeeDTO()
             {
@@ -45,6 +49,9 @@ namespace EmployeeManagement.Application.Conversions
                 Gender = employee.Gender,
                 Role = employee.Role,
                 CreatedDate = employee.CreatedDate,
+                ReportingToName=reportingTo?.EmployeeName!,
+                LastUpdatedBy=employee.LastUpdatedBy,
+                LastUpdatedDate = employee.LastUpdatedDate,
             };
         }
 
@@ -69,12 +76,6 @@ namespace EmployeeManagement.Application.Conversions
                          };
 
             return result.ToList();
-        }
-
-        private  string EncryptPassword(string PlainPassword)
-        {
-            var encPassword = encryption.Encrypt(PlainPassword);
-            return encPassword.Result;
         }
     }
 }

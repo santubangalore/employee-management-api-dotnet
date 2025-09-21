@@ -2,10 +2,8 @@
 using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
-using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace EmployeeManagement.Presentation.Controllers
 {
@@ -23,6 +21,15 @@ namespace EmployeeManagement.Presentation.Controllers
             return empsDto is null ? NotFound(new ResponseMessage("Not Found", false, null!)): Ok(new ResponseMessage("Employee Record", true, empsDto));
         }
 
+        [HttpGet("GetEmployeeListExcluding/{EmployeeId}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<ResponseMessage>> GetEmployeeListExcluding(int EmployeeId)
+        {
+            var employees = await employeeInterface.GetAllExcluding(EmployeeId);
+            var childDepts = await childDeptInterface.GetAllAsync();
+            var empsDto = ConvertEmployee.ConvertToDtoList(employees, childDepts);
+            return empsDto is null ? NotFound(new ResponseMessage("Not Found", false, null!)) : Ok(new ResponseMessage("Employee Record", true, empsDto));
+        }
         [HttpGet("GetEmployee/{Id}")]
         public async Task<ActionResult<ResponseMessage>> GetEmployee(int Id)
         {
@@ -30,8 +37,8 @@ namespace EmployeeManagement.Presentation.Controllers
             if (employee is null)
                 return NotFound("Employee not found");
             var childDept = await childDeptInterface.FindByIdAsync(employee.DeptId);
-
-            var empDto = ConvertEmployee.ConvertToDto(employee, childDept);
+            var EmpList = await  employeeInterface.GetAllAsync();
+            var empDto = ConvertEmployee.ConvertToDto(employee, childDept, EmpList);
             return empDto is null ? NotFound(new ResponseMessage("Not Found", false, null!)) : Ok(new ResponseMessage("Employee Record", true, empDto));
         }
 
@@ -42,7 +49,6 @@ namespace EmployeeManagement.Presentation.Controllers
             if (employee.EmployeeName.Trim() == "" | employee.EmployeeName== null) { return BadRequest(employee); }
             if(!ModelState.IsValid) { return BadRequest("Invalid Employee object"); }
             var empl=ConvertEmployee.ConvertToEntity(employee);
-
             var res=await employeeInterface.CreateAsync(empl);
             return res.flag ? Ok(new ResponseMessage("Employee Added", true, res)) : BadRequest(new ResponseMessage("Error Occurred", false, res)); 
         }
@@ -68,5 +74,6 @@ namespace EmployeeManagement.Presentation.Controllers
             var res = await employeeInterface.DeleteAsync(employee);
             return res.flag ? Ok(new ResponseMessage("Employee deleted", true, res)) : BadRequest(new ResponseMessage("Error Occurred", false, res));
         }
+
     }
 }

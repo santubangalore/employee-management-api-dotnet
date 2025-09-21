@@ -13,5 +13,7 @@ namespace EmployeeManagement.Domain.Entities
         public string ContactPerson { get; set; } = string.Empty;
         public string ContactNo { get; set; } = string.Empty;
         public string EmailId { get; set; } = string.Empty;
+        public virtual List<Employee> Employees { get; set;} 
+        public virtual List<ProjectTasks> ProjectTasks { get; set; }     
     }
 }

@@ -13,10 +13,10 @@ namespace EmployeeManagement.Infrastructure.Data
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<LeaveTypes> LeaveTypes { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<LeaveApprovalStep> LeaveApprovalSteps { get; set; }
-        public DbSet<LeaveBalance> LeaveBalances{ get; set; }
-        public DbSet<TimeSheet> TimeSheets { get; set; }
+        public DbSet<LeaveBalance> LeaveBalances { get; set; }
+        public DbSet<ProjectTasks> ProjectTasks { get; set; }
+        public DbSet<TimeSheetDetails> TimeSheetDetails { get; set; }
         public DbSet<TimeSheetSummary> TimeSheetsSummary { get; set; }
-        public DbSet<Onboarding> Onboardings { get; set; }
+        public DbSet<Onboarding> Onboarding { get; set; }
     }
 }

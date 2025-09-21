@@ -18,5 +18,7 @@ namespace EmployeeManagement.Domain.Entities
         public string EmployeeStatus {  get; set; } = string.Empty;
         public int ReportingTo { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
+        public string LastUpdatedBy { get; set; } =string.Empty;
     }
 }

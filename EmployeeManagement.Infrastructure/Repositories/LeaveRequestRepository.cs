@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagement.Infrastructure.Repositories
 {
-    internal class LeaveRequestRepository(EmployeeMgmtContext dbContext) : ILeaveRequest
+    public class LeaveRequestRepository(EmployeeMgmtContext dbContext) : ILeaveRequest
     {
         public async Task<Response> CreateAsync(LeaveRequest entity)
         {
@@ -21,12 +21,28 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 return new Response(true, $"{currentEntity.LeaveId} added to Database successfully");
             }
             else
-                return new Response(false, $"Error occurred while adding {currentEntity.LeaveId} ");
+                return new Response(false, $"Error occurred while adding {currentEntity} ");
         }
 
-        public Task<Response> DeleteAsync(LeaveRequest entity)
+        public async Task<Response> DeleteAsync(LeaveRequest entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var leaveReq = await FindByIdAsync(entity.LeaveId);
+                if (leaveReq is null)
+                {
+                    return new Response(false, "Leave request not found");
+                }
+                dbContext.Entry(leaveReq).State = EntityState.Detached;
+                dbContext.LeaveRequests.Remove(entity);
+                await dbContext.SaveChangesAsync();
+                return new Response(true, "Leave request deleted");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error happened while deleting Leave request");
+            }
         }
 
         public async Task<LeaveRequest> FindByIdAsync(int Id)

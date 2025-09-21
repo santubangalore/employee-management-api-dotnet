@@ -11,9 +11,9 @@
         public DateTime EndDate { get; set; }
         public DateTime SubmitDate { get; set; }
         public int ApprovedBy { get; set; }
-        public int ApprovalStatus { get; set; } // Approved/Re-wor
+        public string ApprovalStatus { get; set; } // Approved/Re-work/Reject
         public DateTime ApprovalDate { get; set; }
-
+        public virtual List<TimeSheetDetails> Details { get; set; }
 
     }
 }

@@ -11,7 +11,11 @@
         public string Password { get; set; } = string.Empty;
         public string Gender { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
+        public string EmployeeStatus { get; set; } = string.Empty;
+        public int ReportingTo { get; set; }
         public DateTime CreatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
+        public string LastUpdatedBy { get; set; } = string.Empty;
 
     }
 }

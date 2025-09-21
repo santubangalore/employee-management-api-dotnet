@@ -29,8 +29,8 @@ namespace EmployeeManagement.Presentation.Controllers
             return response==null? NotFound() : Ok(response);
         }
 
-        [HttpPost("AddLeaveRequest")]
-        public async Task<ActionResult<Response>> AddLeaveRequest(LeaveRequestDTO leaveRequest)
+        [HttpPost("Apply")]
+        public async Task<ActionResult<Response>> ApplyLeaveRequest(LeaveRequestDTO leaveRequest)
         {
             var entity=ConvertLeaveRequest.ConvertToEntity(leaveRequest);
             var response = await leaveRequestInterface.CreateAsync(entity);
