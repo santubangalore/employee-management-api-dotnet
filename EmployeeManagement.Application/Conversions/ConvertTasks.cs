@@ -23,7 +23,7 @@ namespace EmployeeManagement.Application.Conversions
             if (prjTask is null) return null;
             var projDto = projects.Where(q => q.ProjectId == prjTask.ProjectId).SingleOrDefault();
             return new ProjectTasksDTO()
-            {
+            {  
                 ProjectId = projDto.ProjectId,
                 TaskDescription = prjTask.TaskDescription,
                 TaskName = prjTask.TaskName
@@ -37,7 +37,7 @@ namespace EmployeeManagement.Application.Conversions
                          join proj in projects
                         on p.ProjectId equals proj.ProjectId
                          select new ProjectTasksDTO()
-                         {
+                         {   Id=p.Id,
                              ProjectId = p.ProjectId,
                              TaskDescription = p.TaskDescription,
                              TaskName = p.TaskName,

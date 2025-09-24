@@ -5,7 +5,7 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface ITimeSheetSummary :IGenericInterface<TimeSheetSummary>
+    public interface ITimeSheetSummary :IGenericRepoInterface<TimeSheetSummary>
     {
         Task<IEnumerable<TimeSheetSummary>> GetTimeSheetByEmployeeId(int EmployeeId);
         Task<IEnumerable<TimeSheetDetails>> GetTimeSheetDetail(TimeSheetSummary summary);

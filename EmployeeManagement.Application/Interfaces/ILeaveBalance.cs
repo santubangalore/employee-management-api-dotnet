@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface ILeaveBalance : IGenericInterface<LeaveBalance>
+    public interface ILeaveBalance : IGenericRepoInterface<LeaveBalance>
     {
     }
 }

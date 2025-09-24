@@ -3,7 +3,7 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface IProjectEmployee :IGenericInterface<ProjectEmployee> {
+    public interface IProjectEmployee :IGenericRepoInterface<ProjectEmployee> {
         Task<IEnumerable<ProjectEmployee>> GetProjectEmployees(int ProjectId);
     }
 }

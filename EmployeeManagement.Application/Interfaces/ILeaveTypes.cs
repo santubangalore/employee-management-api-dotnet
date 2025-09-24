@@ -3,5 +3,5 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface ILeaveTypes:IGenericInterface<LeaveTypes> {}
+    public interface ILeaveTypes:IGenericRepoInterface<LeaveTypes> {}
 }

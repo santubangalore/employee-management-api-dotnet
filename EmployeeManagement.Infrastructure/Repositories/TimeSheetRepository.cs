@@ -23,16 +23,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 if (summaryExists.Any()) { return new Response(false, "Timesheet exists"); }
                 var result = await dbcontext.TimeSheetsSummary.AddAsync(entity);
                 dbcontext.SaveChanges();
-                var timeSheetDetails = entity.Details;
-                foreach (var item in timeSheetDetails)
-                {
-                    item.TimesheetSummaryId = result.Entity.Id;
-                    dbcontext.TimeSheetDetails.Add(item);
-                }
-                dbcontext.SaveChanges();
+           
                 return new Response(true, "Timesheet saved");
-            }catch (Exception ex) { 
-                return new Response(false, ex.Message);
+            }catch (Exception ex) 
+            { 
+                return new Response(false, ex.InnerException.ToString());
             }
         }
 

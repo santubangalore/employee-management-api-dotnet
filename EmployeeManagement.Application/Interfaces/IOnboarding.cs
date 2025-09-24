@@ -1,8 +1,9 @@
 ﻿using EmployeeManagement.Application.GenericInterface;
+using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface IOnboarding :IGenericInterface<IOnboarding>
+    public interface IOnboarding :IGenericRepoInterface<Onboarding>
     {
     }
 }

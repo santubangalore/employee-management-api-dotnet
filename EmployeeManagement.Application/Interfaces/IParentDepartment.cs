@@ -3,5 +3,5 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface IParentDepartment : IGenericInterface<ParentDepartment> { }
+    public interface IParentDepartment : IGenericRepoInterface<ParentDepartment> { }
 }

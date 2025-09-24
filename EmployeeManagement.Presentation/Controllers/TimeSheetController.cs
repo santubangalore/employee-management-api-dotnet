@@ -1,18 +1,15 @@
-﻿using EmployeeManagement.Application.DTOs;
-using EmployeeManagement.Application.Interfaces;
+﻿using EmployeeManagement.Application;
 using EmployeeManagement.Application.Conversions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using EmployeeManagement.Application;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using EmployeeManagement.Application.DTOs;
+using EmployeeManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TimeSheetController(ITimeSheetSummary timeSheetInterface) : ControllerBase
+    public class TimeSheetController(ITimeSheetSummary timeSheetInterface, IEmployee employeeInterface) : ControllerBase
     {
         /// <summary>
         /// Gets all timesheets of an employee
@@ -40,12 +37,14 @@ namespace EmployeeManagement.Presentation.Controllers
         [Authorize]
         public async Task<ActionResult<ResponseMessage>> CreateTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
         {
-            if (timeSheetDto.EmployeeId <= 0) { return BadRequest("EmployeeId Id cannot be  0"); }
-            var timeSheetObj=  ConvertTimeSheets.ConvertToEntity(timeSheetDto);
+           // if (timeSheetDto.EmployeeId <= 0) { return BadRequest("EmployeeId Id cannot be  0"); }
+            var employee = await employeeInterface.GetByAsync(_=>_.EmailId==timeSheetDto.Employee.EmailId);
+            if(employee is null) { return NotFound("Employee email Id not found"); }
+            var timeSheetObj=  ConvertTimeSheets.ConvertToEntity(timeSheetDto,employee);
             if (timeSheetObj == null) { return BadRequest(); }
             var response = await timeSheetInterface.CreateAsync(timeSheetObj);
             if (!response.flag) { return BadRequest(response); ; }
-            return Ok(new ResponseMessage("List of timesheets", true, response));
+            return Ok(new ResponseMessage("Timesheet created", true, response));
         }
 
         /// <summary>
@@ -58,12 +57,13 @@ namespace EmployeeManagement.Presentation.Controllers
         [Authorize]
         public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheet(TimeSheetSummaryDTO timeSheetDto)
         {
-            if (timeSheetDto.EmployeeId <= 0) { return BadRequest("EmployeeId Id cannot be  0"); }
-            var timeSheetObj = ConvertTimeSheets.ConvertToEntity(timeSheetDto);
+            var employee = await employeeInterface.GetByAsync(_ => _.EmailId == timeSheetDto.Employee.EmailId);
+            if (employee is null) { return NotFound("Employee email Id not found"); }
+            var timeSheetObj = ConvertTimeSheets.ConvertToEntity(timeSheetDto, employee);
             if (timeSheetObj == null) { return BadRequest(); }
             var response = await timeSheetInterface.CreateAsync(timeSheetObj);
             if (!response.flag) { return BadRequest(response); ; }
-            return Ok(new ResponseMessage("List of timesheets", true, response));
+            return Ok(new ResponseMessage("Updated timesheet", true, response));
         }
 
         [HttpGet("GetWeeklyCalendar/{Year}")]
@@ -76,9 +76,11 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetTimeSheetforWeek")]
-        public async Task<ActionResult<ResponseMessage>> GetTimeSheetforWeek(DateTime fromDate, DateTime toDate)
+        public async Task<ActionResult<ResponseMessage>> GetTimeSheetforWeek(DateTime fromDate, DateTime toDate,string EmpEmailId)
         {
-            var timeSheetObj = await timeSheetInterface.GetByAsync(q=>q.StartDate==fromDate && q.EndDate==toDate);
+            var employee = await employeeInterface.GetByAsync(_ => _.EmailId == EmpEmailId);
+
+            var timeSheetObj = await timeSheetInterface.GetByAsync(q=>q.StartDate==fromDate && q.EndDate==toDate && q.EmployeeId==employee.EmployeeId);
             if (timeSheetObj == null) { return Ok(new ResponseMessage("No timesheet found", false, null!)); }
 
             return Ok(new ResponseMessage("List of timesheets", true, timeSheetObj));

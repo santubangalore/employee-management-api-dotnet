@@ -14,6 +14,5 @@
         public string ApprovalStatus { get; set; } // Approved/Re-work/Reject
         public DateTime ApprovalDate { get; set; }
         public virtual List<TimeSheetDetails> Details { get; set; }
-
     }
 }

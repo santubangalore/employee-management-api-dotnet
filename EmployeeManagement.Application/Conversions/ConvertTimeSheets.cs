@@ -5,36 +5,55 @@ namespace EmployeeManagement.Application.Conversions
 {
     public class ConvertTimeSheets
     {
-        public static TimeSheetSummary ConvertToEntity(TimeSheetSummaryDTO timeSheet)
+        public static TimeSheetSummary ConvertToEntity(TimeSheetSummaryDTO timeSheet, Employee employee)
         {
-            if (timeSheet is null) return null;
-            var lrq = new TimeSheetSummary()
+            try
             {
-                EmployeeId = timeSheet.EmployeeId,
-                StartDate = timeSheet.StartDate,
-                EndDate = timeSheet.EndDate,
-                ProjectId = timeSheet.ProjectId,
-                SubmitDate = timeSheet.SubmitDate,
-                ApprovalDate = timeSheet.ApprovalDate,
-                ApprovedBy = timeSheet.ApprovedBy,
-                ApprovalStatus=timeSheet.ApprovalStatus,
-                Details = ConvertToDetailTimeSheet(timeSheet.Details),
-            };
-            return lrq;
+                if (timeSheet is null) return null;
+                var tssumm = new TimeSheetSummary()
+                {
+                    EmployeeId = employee.EmployeeId,
+                    StartDate = timeSheet.StartDate,
+                    EndDate = timeSheet.EndDate,
+                    ProjectId = timeSheet.ProjectId,
+                    SubmitDate = timeSheet.SubmitDate,
+                    ApprovalDate = timeSheet.ApprovalDate,
+                    ApprovedBy = timeSheet.ApprovedBy,
+                    ApprovalStatus = timeSheet.ApprovalStatus,
+                    Details = ConvertToDetailTimeSheet(timeSheet.Details),
+                };
+                return tssumm;
+            }
+            catch (Exception ex) 
+            {
+                throw;
+            }
         }
 
-        private static List<TimeSheetDetails> ConvertToDetailTimeSheet(List<TimeSheetDetailsDTO> details)
+        public static List<TimeSheetDetails> ConvertToDetailTimeSheet(List<TimeSheetDetailsDTO> details)
         {
-            var timeSheetDetails= from TimeSheetDetails det in details
-                                  select new TimeSheetDetails()
-                                  {
-                                    TimesheetSummaryId = det.TimesheetSummaryId,
-                                    Date = det.Date,
-                                    TaskId = det.TaskId,
-                                    AttStatus = det.AttStatus,
-                                    Id = det.Id,
-                                  };
-            return timeSheetDetails.ToList();
+            try
+            {
+                var list = new List<TimeSheetDetails>();
+                foreach (var detail in details)
+                {
+                    list.Add(new TimeSheetDetails()
+                    {
+                         Id = detail.Id,
+                         Date = detail.Date,
+                         AttStatus = detail.AttStatus,
+                         Hours = detail.Hours,
+                         TaskId = detail.TaskId,
+                         TimesheetSummaryId = detail.TimesheetSummaryId,   
+                    });
+                }
+     
+                return list.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public static TimeSheetSummaryDTO ConvertToDTO(TimeSheetSummary timeSheet)

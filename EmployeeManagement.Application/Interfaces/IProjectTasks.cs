@@ -3,5 +3,5 @@ using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Interfaces
 {
-    public interface IProjectTasks :IGenericInterface<ProjectTasks> {}
+    public interface IProjectTasks :IGenericRepoInterface<ProjectTasks> {}
 }

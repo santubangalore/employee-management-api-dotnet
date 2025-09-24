@@ -16,7 +16,7 @@ namespace EmployeeManagement.Presentation.Controllers
         {
             var result=await leaveTypesInterface.GetAllAsync();
             var leaveTypesDto = ConvertLeaveType.ConvertToDtoList(result);
-            if (leaveTypesDto != null) { return NotFound("No records found in Db!"); }
+            if (leaveTypesDto == null) { return NotFound("No records found in Db!"); }
             return Ok(leaveTypesDto);
         }
 

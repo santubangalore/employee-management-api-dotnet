@@ -73,9 +73,10 @@ namespace EmployeeManagement.Infrastructure.Repositories
             }
         }
 
-        public Task<LeaveRequest> GetByAsync(Expression<Func<LeaveRequest, bool>> predicate)
+        public async Task<LeaveRequest> GetByAsync(Expression<Func<LeaveRequest, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var result= await dbContext.LeaveRequests.Where(predicate).SingleOrDefaultAsync();
+            return result is not null ? result : null!;
         }
 
         public async Task<Response> UpdateAsync(LeaveRequest entity)

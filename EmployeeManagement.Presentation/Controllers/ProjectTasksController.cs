@@ -2,7 +2,6 @@
 using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Presentation.Controllers
@@ -29,6 +28,21 @@ namespace EmployeeManagement.Presentation.Controllers
             return response.flag == false ? NotFound(response) : Ok(response);
         }
 
+        [HttpPut("UpdateProjectTask")]
+        public async Task<ActionResult> UpdateProjectTask(ProjectTasksDTO projectTask)
+        {
+            var entity = ConvertTasks.ConvertToEntity(projectTask);
+            var response = await projectTasksInterface.CreateAsync(entity);
+            return response.flag == false ? NotFound(response) : Ok(response);
+        }
 
+        [HttpDelete("DeleteProjectTask")]
+        public async Task<ActionResult> DeleteProjectTask(int projectTaskId)
+        {
+            throw new NotImplementedException("Method not implemented");
+            //var entity = ConvertTasks.ConvertToEntity(projectTask);
+            //var response = await projectTasksInterface.CreateAsync(entity);
+            //return response.flag == false ? NotFound(response) : Ok(response);
+        }
     }
 }
