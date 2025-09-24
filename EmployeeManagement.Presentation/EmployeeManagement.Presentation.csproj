@@ -4,6 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Company>Santu Ghosh</Company>
+    <Description>An Employee Management System by Santu Ghosh</Description>
+    <Copyright>Santu Ghosh</Copyright>
+    <AssemblyVersion>1.0.9.25</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

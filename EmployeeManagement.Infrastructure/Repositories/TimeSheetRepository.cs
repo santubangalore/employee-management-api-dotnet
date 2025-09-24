@@ -46,6 +46,13 @@ namespace EmployeeManagement.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<TimeSheetSummary>> GetSummariesAsync(DateTime startDate, DateTime endDate, int EmployeeId)
+        {
+            var summaryExists = await dbcontext.TimeSheetsSummary.Where(q => q.EmployeeId == EmployeeId && q.StartDate == startDate && q.EndDate == endDate).ToListAsync();
+            if (summaryExists.Any()) { return null; }
+            return summaryExists.ToList();
+        }
+
         public async Task<IEnumerable<TimeSheetSummary>> GetAllAsync()
         {
             try

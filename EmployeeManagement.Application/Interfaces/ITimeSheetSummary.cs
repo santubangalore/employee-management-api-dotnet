@@ -10,6 +10,7 @@ namespace EmployeeManagement.Application.Interfaces
         Task<IEnumerable<TimeSheetSummary>> GetTimeSheetByEmployeeId(int EmployeeId);
         Task<IEnumerable<TimeSheetDetails>> GetTimeSheetDetail(TimeSheetSummary summary);
         //submit after re-work or re-submit
+        Task<IEnumerable<TimeSheetSummary>> GetSummariesAsync (DateTime fromDate, DateTime toDate, int EmployeeId);
         Task<Response> UpdateTimeSheetDetail(TimeSheetSummary summary);
         Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry);
         Task<IEnumerable<TimeSheetCalendar>> GetWeeklyCalendar(int year);

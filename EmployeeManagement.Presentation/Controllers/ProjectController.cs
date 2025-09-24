@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.Application.Conversions;
+﻿using EmployeeManagement.Application;
+using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Domain.Entities;
@@ -8,15 +9,15 @@ namespace EmployeeManagement.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProjectController(IProject projectInterface) : ControllerBase
+    public class ProjectsController(IProject projectInterface) : ControllerBase
     {
         [HttpGet("GetProjects")]
-        public async Task<ActionResult<ProjectDTO>> GetProjects()
+        public async Task<ActionResult<ResponseMessage>> GetProjects()
         {
             var result = await projectInterface.GetAllAsync();
-            var leaveTypesDto = ConvertProject.ConvertToDtoList(result);
-            if (leaveTypesDto == null) { return NotFound("No records found in Db!"); }
-            return Ok(leaveTypesDto);
+            var projectListDto = ConvertProject.ConvertToDtoList(result);
+            if (projectListDto == null) { return NotFound("No records found in Db!"); }
+            return Ok(new ResponseMessage("Projects",true,projectListDto ));
         }
 
         [HttpPost("CreateProject")]

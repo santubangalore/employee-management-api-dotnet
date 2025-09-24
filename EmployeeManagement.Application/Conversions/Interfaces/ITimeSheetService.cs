@@ -13,7 +13,7 @@ namespace EmployeeManagement.Application.Conversions.Interfaces
         Task<IEnumerable<TimeSheetSummaryDTO>> GetAllAsync();
         Task<TimeSheetSummaryDTO> FindByIdAsync(int Id);
         Task<TimeSheetSummaryDTO> GetByAsync(Expression<Func<TimeSheetSummaryDTO, bool>> predicate);
-        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, int EmployeeId);
+        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, string EmailAddress);
         Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetByEmployeeId(int EmployeeId);
         Task<IEnumerable<TimeSheetDetailsDTO>> GetTimeSheetDetail(TimeSheetSummary summary);
         //submit after re-work or re-submit

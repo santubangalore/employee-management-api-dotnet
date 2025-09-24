@@ -12,6 +12,8 @@
         public int ApprovedBy { get; set; }
         public string ApprovalStatus { get; set; } // Approved/Re-work/Reject
         public DateTime ApprovalDate { get; set; }
+        public int BillableHours { get; set; }
+        public int NonBillableHours { get; set; }
         public List<TimeSheetDetailsDTO> Details { get; set; }
     }
 }

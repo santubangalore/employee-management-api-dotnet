@@ -20,6 +20,8 @@ namespace EmployeeManagement.Application.Conversions
                     ApprovalDate = timeSheet.ApprovalDate,
                     ApprovedBy = timeSheet.ApprovedBy,
                     ApprovalStatus = timeSheet.ApprovalStatus,
+                    BillableHours = timeSheet.BillableHours,
+                    NonBillableHours = timeSheet.NonBillableHours,
                     Details = ConvertToDetailTimeSheet(timeSheet.Details),
                 };
                 return tssumm;
@@ -86,7 +88,7 @@ namespace EmployeeManagement.Application.Conversions
                                    };
             return timeSheetDetails.ToList();
         }
-        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTO(IEnumerable<TimeSheetSummary> timeSheets)
+        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTOs(IEnumerable<TimeSheetSummary> timeSheets)
         {
             if (timeSheets is null|| timeSheets.Count()==0) return null;
             var timeSheetDtos = from TimeSheetSummary det in timeSheets

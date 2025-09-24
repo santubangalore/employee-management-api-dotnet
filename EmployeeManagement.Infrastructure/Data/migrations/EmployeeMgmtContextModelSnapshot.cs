@@ -131,10 +131,13 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("FromYear")
+                        .HasColumnType("int");
+
                     b.Property<int>("LeaveType")
                         .HasColumnType("int");
 
-                    b.Property<int>("Year")
+                    b.Property<int>("ToYear")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -213,8 +216,12 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DOB")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Documents")
                         .IsRequired()
@@ -231,11 +238,11 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("OnBoardingDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("OnboardingBy")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("OnboardingStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -445,11 +452,17 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Property<int>("ApprovedBy")
                         .HasColumnType("int");
 
+                    b.Property<int>("BillableHours")
+                        .HasColumnType("int");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("NonBillableHours")
+                        .HasColumnType("int");
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
@@ -467,6 +480,23 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("TimeSheetsSummary");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.models.ProjectTasksResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TaskName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProjectTasksResult");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Employee", b =>

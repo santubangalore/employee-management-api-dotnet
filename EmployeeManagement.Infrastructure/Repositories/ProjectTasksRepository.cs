@@ -1,8 +1,10 @@
 ﻿using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Application.Records;
 using EmployeeManagement.Domain.Entities;
+using EmployeeManagement.Domain.models;
 using EmployeeManagement.Infrastructure.Data;
 using EmployeeManagement.Infrastructure.Shared;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -99,6 +101,25 @@ namespace EmployeeManagement.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<ProjectTasks>> GetProjectTasks(int projectId)
+        {
+           var result=from projectTask in dbContext.ProjectTasks where projectTask.ProjectId == projectId
+                      select projectTask;
+
+            return result.ToList();
+        }
+
+        public async Task<IEnumerable<ProjectTasksResult>> GetResultsFromStoredProcedure(int projectId)
+        {
+            var parameter = new SqlParameter("@ProjectId", projectId);
+
+            var res = await dbContext.Set<ProjectTasksResult>()
+                                 .FromSqlRaw("EXEC GetTasksListByProject @ProjectId", parameter)
+                                 .ToListAsync();
+
+
+            return res;
+        }
         public async Task<Response> UpdateAsync(ProjectTasks entity)
         {
             try
@@ -119,5 +140,6 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 return new Response(false, "Error happened while updating Leave request");
             }
         }
+       
     }
 }

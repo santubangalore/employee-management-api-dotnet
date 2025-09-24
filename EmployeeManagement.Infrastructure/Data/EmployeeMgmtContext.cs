@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Domain.Entities;
+using EmployeeManagement.Domain.models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.Infrastructure.Data
@@ -18,5 +19,7 @@ namespace EmployeeManagement.Infrastructure.Data
         public DbSet<TimeSheetDetails> TimeSheetDetails { get; set; }
         public DbSet<TimeSheetSummary> TimeSheetsSummary { get; set; }
         public DbSet<Onboarding> Onboarding { get; set; }
+
+        public DbSet<ProjectTasksResult> ProjectTasksResult {  get; set; }
     }
 }
