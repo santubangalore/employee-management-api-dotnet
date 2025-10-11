@@ -15,6 +15,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
             try
             {
                 //Check if the product already exists
+                var getEmployeeExists = await GetAllByAsync(_ => _.EmpId == entity.EmpId && _.IsActive && _.AssignedDate>_.ExitDate  );
+                if (getEmployeeExists.Count()>0) { 
+                    return new Response(false, "Employee already exists in active project");
+                }
+
                 var getPrjEmployee = await GetByAsync(_ => _.EmployeeName == entity.EmployeeName && _.ProjectId==entity.ProjectId);
                 if (getPrjEmployee is not null && !string.IsNullOrEmpty(getPrjEmployee.EmployeeName))
                 {
@@ -24,15 +29,15 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 await dbcontext.SaveChangesAsync();
                 if (currentEntity is not null && currentEntity.EmpProjectId > 0)
                 {
-                    return new Response(true, $"{entity.EmpProjectId} added to Database successfully");
+                    return new Response(true, $"{entity.EmployeeName} added to Database successfully");
                 }
                 else
-                    return new Response(false, $"Error occurred while adding {entity.EmpProjectId} ");
+                    return new Response(false, $"Error occurred while adding {entity.EmployeeName} ");
             }
             catch (Exception exception)
             {
                 LogException.LogExceptions(exception);
-                return new Response(false, "Error occurred adding new product");
+                return new Response(false, "Error occurred adding new ProjectEmployee");
             }
         }
 
@@ -42,12 +47,12 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {
                 var proj = await FindByIdAsync(entity.EmpProjectId);
                 if (proj is null)
-                    return new Response(true, $"{entity.EmpProjectId} not found in Database");
+                    return new Response(true, $"{entity.EmployeeName} not found in Database");
                 else
                 {
                     dbcontext.EmployeeProjects.Remove(proj);
                     await dbcontext.SaveChangesAsync();
-                    return new Response(true, $"{entity.EmpProjectId} deleted");
+                    return new Response(true, $"{entity.EmployeeName} deleted");
                 }
             }
             catch (Exception exception)
@@ -84,10 +89,15 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 throw new InvalidOperationException("Error occurred retrieving ProjectEmployees");
             }
         }
-
-        public Task<ProjectEmployee> GetByAsync(Expression<Func<ProjectEmployee, bool>> predicate)
+        public async Task<IEnumerable<ProjectEmployee>> GetAllByAsync(Expression<Func<ProjectEmployee, bool>> predicate)
         {
-            throw new NotImplementedException();
+            var projEmployee = await dbcontext.EmployeeProjects.Where(predicate).ToListAsync();
+            return projEmployee!;
+        }
+        public async Task<ProjectEmployee> GetByAsync(Expression<Func<ProjectEmployee, bool>> predicate)
+        {
+            var projEmployee = await dbcontext.EmployeeProjects.Where(predicate).SingleOrDefaultAsync();
+            return projEmployee!;
         }
 
         public async Task<IEnumerable<ProjectEmployee>> GetProjectEmployees(int ProjectId)

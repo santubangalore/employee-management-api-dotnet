@@ -34,10 +34,8 @@ namespace EmployeeManagement.Application.Conversions
             return Emp;
         }
 
-        public static GetEmployeeDTO ConvertToDto(Employee employee,ChildDepartment childDept,IEnumerable<Employee> employees)
+        public static GetEmployeeDTO ConvertToDto(Employee employee,ChildDepartment childDept,Employee manager)
         {
-            var reportingTo = employees.Where(q=>q.EmployeeId == employee.ReportingTo).SingleOrDefault();
-            if (employee is null) return null;
             return new GetEmployeeDTO()
             {
                 EmployeeId = employee.EmployeeId,
@@ -49,7 +47,7 @@ namespace EmployeeManagement.Application.Conversions
                 Gender = employee.Gender,
                 Role = employee.Role,
                 CreatedDate = employee.CreatedDate,
-                ReportingToName=reportingTo?.EmployeeName!,
+                ReportingToName= manager?.EmployeeName!,
                 LastUpdatedBy=employee.LastUpdatedBy,
                 LastUpdatedDate = employee.LastUpdatedDate,
             };
@@ -62,13 +60,19 @@ namespace EmployeeManagement.Application.Conversions
             var result = from employee in employees
                          join childDept in childDepts
                          on employee.DeptId equals childDept.ChildDeptId
+                         join manager in employees on employee.ReportingTo equals manager.EmployeeId
+                         into empManagerGroup
+                         from manager in empManagerGroup.DefaultIfEmpty()
                          select new GetEmployeeDTO()
                          {
                              EmployeeId = employee.EmployeeId,
                              EmployeeName = employee.EmployeeName,
                              ContactNo = employee.ContactNo,
+                             ParentDeptId=childDept.ParentDeptId,
                              DeptId = employee.DeptId,
                              DeptName =childDept.DepartmentName,
+                             ReportingTo = employee.ReportingTo,
+                             ReportingToName = manager?.EmployeeName!,
                              EmailId = employee.EmailId,
                              Gender = employee.Gender,
                              Role = employee.Role,

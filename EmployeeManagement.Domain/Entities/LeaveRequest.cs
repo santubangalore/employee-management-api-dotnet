@@ -11,7 +11,6 @@ namespace EmployeeManagement.Domain.Entities
     {
         [Key]
         public int LeaveId { get; set; }
-        
         public int LeaveTypeId { get; set; }
         public DateTime StartDate { get; set; } 
         public DateTime EndDate { get; set; }
@@ -22,6 +21,6 @@ namespace EmployeeManagement.Domain.Entities
         public string Reason { get; set; } = string.Empty ;
         public string RequestDate { get; set; } =string.Empty ;
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public virtual Employee Employee { get; set; }
     }
 }

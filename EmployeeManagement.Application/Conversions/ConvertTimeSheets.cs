@@ -71,6 +71,8 @@ namespace EmployeeManagement.Application.Conversions
                 ApprovalDate = timeSheet.ApprovalDate,
                 ApprovedBy = timeSheet.ApprovedBy,
                 ApprovalStatus = timeSheet.ApprovalStatus,
+                BillableHours  = timeSheet.BillableHours,
+                NonBillableHours = timeSheet.NonBillableHours,
                 Details = ConvertToDetailTimeSheetDto(timeSheet.Details),
             };
             return lrq;
@@ -83,29 +85,38 @@ namespace EmployeeManagement.Application.Conversions
                                        TimesheetSummaryId = det.TimesheetSummaryId,
                                        Date = det.Date,
                                        TaskId = det.TaskId,
+                                       Hours = det.Hours,
                                        AttStatus = det.AttStatus,
                                        Id = det.Id,
                                    };
             return timeSheetDetails.ToList();
         }
-        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTOs(IEnumerable<TimeSheetSummary> timeSheets)
+        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTOs(IEnumerable<TimeSheetSummary> timeSheets,IEnumerable<Employee> employees)
         {
             if (timeSheets is null|| timeSheets.Count()==0) return null;
-            var timeSheetDtos = from TimeSheetSummary det in timeSheets
-                                   select new TimeSheetSummaryDTO()
-                                   {
-                                       EmployeeId = det.EmployeeId,
-                                       StartDate = det.StartDate,
-                                       EndDate = det.EndDate,
-                                       ProjectId = det.ProjectId,
-                                       SubmitDate = det.SubmitDate,
-                                       ApprovalDate = det.ApprovalDate,
-                                       ApprovedBy = det.ApprovedBy,
-                                       ApprovalStatus = det.ApprovalStatus,
-                                       Details = ConvertToDetailTimeSheetDto(det.Details),
-                                       Id = det.Id,
-                                   };
-            return timeSheetDtos.ToList();
+            List<TimeSheetSummaryDTO> timeSheetSummaryDTOs = new List<TimeSheetSummaryDTO>();
+
+            foreach (var timeSheetSummary in timeSheets) {
+                var employee=employees.SingleOrDefault(q=>q.EmployeeId==timeSheetSummary.EmployeeId);
+                var summary= new TimeSheetSummaryDTO()
+                {
+                    EmployeeId = timeSheetSummary.EmployeeId,
+                    StartDate = timeSheetSummary.StartDate,
+                    EndDate = timeSheetSummary.EndDate,
+                    ProjectId = timeSheetSummary.ProjectId,
+                    SubmitDate = timeSheetSummary.SubmitDate,
+                    EmpName = employee?.EmployeeName!,
+                    ApprovalDate = timeSheetSummary.ApprovalDate,
+                    ApprovedBy = timeSheetSummary.ApprovedBy,
+                    ApprovalStatus = timeSheetSummary.ApprovalStatus,
+                    BillableHours = timeSheetSummary.BillableHours,
+                    NonBillableHours = timeSheetSummary.NonBillableHours,
+                    Details = ConvertToDetailTimeSheetDto(timeSheetSummary.Details),
+                    Id = timeSheetSummary.Id,
+                };
+                timeSheetSummaryDTOs.Add(summary);
+            }
+            return timeSheetSummaryDTOs.ToList();
         }
 
     }

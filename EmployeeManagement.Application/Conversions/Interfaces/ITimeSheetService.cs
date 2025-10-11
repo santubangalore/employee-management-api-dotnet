@@ -9,13 +9,16 @@ namespace EmployeeManagement.Application.Conversions.Interfaces
     {
         Task<Response> CreateAsync(TimeSheetSummaryDTO entity);
         Task<Response> UpdateAsync(TimeSheetSummaryDTO entity);
-        Task<Response> DeleteAsync(TimeSheetSummaryDTO entity);
+        Task<Response> DeleteAsync(TimeSheetSummary entity);
         Task<IEnumerable<TimeSheetSummaryDTO>> GetAllAsync();
         Task<TimeSheetSummaryDTO> FindByIdAsync(int Id);
-        Task<TimeSheetSummaryDTO> GetByAsync(Expression<Func<TimeSheetSummaryDTO, bool>> predicate);
-        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, string EmailAddress);
-        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetByEmployeeId(int EmployeeId);
+        Task<TimeSheetSummary> GetByAsync(Expression<Func<TimeSheetSummary, bool>> predicate);
+        Task<int> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, string EmailAddress);
+        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetOfReportees(string EmailId);
+        Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetByEmployeeId(string EmailId);
         Task<IEnumerable<TimeSheetDetailsDTO>> GetTimeSheetDetail(TimeSheetSummary summary);
+        Task<Response> ApproveRejectTimesheetAsync(TimeSheetSummaryDTO timesheetDto);
+
         //submit after re-work or re-submit
         Task<Response> UpdateTimeSheetDetail(TimeSheetSummary summary);
         Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry);

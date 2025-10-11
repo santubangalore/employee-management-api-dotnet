@@ -48,7 +48,15 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public async Task<IEnumerable<Onboarding>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            try { 
+                var result=await dbContext.Onboarding.AsNoTracking().ToListAsync();
+                return result is not null ? result : null!;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
         }
 
         public async Task<Onboarding> GetByAsync(Expression<Func<Onboarding, bool>> predicate)

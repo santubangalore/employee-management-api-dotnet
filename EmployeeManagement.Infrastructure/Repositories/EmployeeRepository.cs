@@ -53,7 +53,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            var result = await dbcontext.Employees.AsNoTracking().ToListAsync();
+            var result = await dbcontext.Employees.ToListAsync();
             return result;
         }
 
@@ -75,6 +75,23 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 throw new Exception($"Error while retrieving Employee,{ex.Message}");
+            }
+        }
+
+        public async Task<IEnumerable<Employee>> GetReportees(string EmailId)
+        {
+            try
+            {
+                var employeeObj = await GetByAsync(_ => _.EmailId == EmailId);
+                if (employeeObj is null) return null;
+                var employeeList= await GetAllAsync();
+                var reportees = employeeList.Where(_ => _.ReportingTo == employeeObj.EmployeeId).ToList();
+                return reportees;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
             }
         }
 

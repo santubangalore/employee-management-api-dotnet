@@ -2,7 +2,6 @@
 using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
-using EmployeeManagement.Domain.models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Presentation.Controllers
@@ -26,7 +25,6 @@ namespace EmployeeManagement.Presentation.Controllers
         {
             var tasks = await projectTaskRepo.GetResultsFromStoredProcedure(ProjectId);
             if (tasks == null) { return new EmptyResult(); }
-            var projects = await projectRepo.GetAllAsync();
             return tasks == null ? new EmptyResult() : Ok(new ResponseMessage("Success", true, tasks));
         }
 
@@ -43,16 +41,16 @@ namespace EmployeeManagement.Presentation.Controllers
         {
             var entity = ConvertTasks.ConvertToEntity(projectTask);
             var response = await projectTaskRepo.UpdateAsync(entity);
-            return response.flag == false ? NotFound(response) : Ok(response);
+            return response.flag == false ? throw new ArgumentException("Not found") : Ok(response);
         }
 
         [HttpDelete("DeleteProjectTask")]
         public async Task<ActionResult> DeleteProjectTask(int projectTaskId)
         {
-            throw new NotImplementedException("Method not implemented");
-            //var entity = ConvertTasks.ConvertToEntity(projectTask);
-            //var response = await projectTasksInterface.CreateAsync(entity);
-            //return response.flag == false ? NotFound(response) : Ok(response);
+            var projectTask = await projectTaskRepo.FindByIdAsync(projectTaskId);
+            if (projectTask == null) { throw new ArgumentException("Not found"); }
+            var response = await projectTaskRepo.UpdateAsync(projectTask);
+            return response.flag == false ? NotFound(response) : Ok(response);
         }
     }
 }

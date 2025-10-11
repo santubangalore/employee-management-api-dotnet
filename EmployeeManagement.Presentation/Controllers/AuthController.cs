@@ -28,7 +28,7 @@ namespace EmployeeManagement.Presentation.Controllers
             if (EmailId.Trim() =="" ) return BadRequest();
 
             var result = await loginInterface.IsAdmin(EmailId);
-            if (!result) return Ok(new ResponseMessage("Not An Admin", false, result));
+            if (result==null) return Ok(new ResponseMessage("Not An Admin", false, result));
             return Ok(new ResponseMessage("Is an Admin",true, result));
         }
     }

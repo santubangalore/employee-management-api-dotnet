@@ -223,10 +223,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Documents")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("EmailId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -238,6 +234,9 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("OnBoardingCompleted")
+                        .HasColumnType("bit");
+
                     b.Property<int>("OnboardingBy")
                         .HasColumnType("int");
 
@@ -248,7 +247,11 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VerificationDone")
+                    b.Property<string>("UploadedDocuments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VerificationStage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -339,6 +342,9 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Property<string>("EmployeeName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExitDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -489,6 +495,10 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TaskId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TaskName")
                         .IsRequired()

@@ -2,6 +2,7 @@
 using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +13,7 @@ namespace EmployeeManagement.Presentation.Controllers
     public class EmployeeController(IEmployee employeeInterface, IChildDepartment childDeptInterface) : ControllerBase
     {
         [HttpGet("GetEmployees")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin,SuperAdmin")]
         public async Task<ActionResult<ResponseMessage>> GetEmployees()
         {
             var employees=await employeeInterface.GetAllAsync();
@@ -22,7 +23,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpGet("GetEmployeeListExcluding/{EmployeeId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
         public async Task<ActionResult<ResponseMessage>> GetEmployeeListExcluding(int EmployeeId)
         {
             var employees = await employeeInterface.GetAllExcluding(EmployeeId);
@@ -30,15 +31,27 @@ namespace EmployeeManagement.Presentation.Controllers
             var empsDto = ConvertEmployee.ConvertToDtoList(employees, childDepts);
             return empsDto is null ? NotFound(new ResponseMessage("Not Found", false, null!)) : Ok(new ResponseMessage("Employee Record", true, empsDto));
         }
-        [HttpGet("GetEmployee/{Id}")]
-        public async Task<ActionResult<ResponseMessage>> GetEmployee(int Id)
+      
+        [HttpGet("GetReportees/{EmailId}")]
+        public async Task<ActionResult<ResponseMessage>> GetReportees(string EmailId)
         {
-            var employee = await employeeInterface.FindByIdAsync(Id);
+            var employees = await employeeInterface.GetReportees(EmailId);
+            if (employees == null)
+              return Ok(new ResponseMessage("No reportees Found", false, 0));
+            var childDepts = await childDeptInterface.GetAllAsync();
+            var empsDto = ConvertEmployee.ConvertToDtoList(employees, childDepts);
+            return Ok(new ResponseMessage("Success", true, empsDto));  
+        }
+
+        [HttpGet("GetEmployee/{EmailId}")]
+        public async Task<ActionResult<ResponseMessage>> GetEmployee(string EmailId)
+        {
+            var employee = await employeeInterface.GetByAsync(_ => _.EmailId == EmailId);
             if (employee is null)
                 return NotFound("Employee not found");
             var childDept = await childDeptInterface.FindByIdAsync(employee.DeptId);
-            var EmpList = await  employeeInterface.GetAllAsync();
-            var empDto = ConvertEmployee.ConvertToDto(employee, childDept, EmpList);
+            var manager = await employeeInterface.GetByAsync(_ => _.EmployeeId == employee.ReportingTo);
+            var empDto = ConvertEmployee.ConvertToDto(employee, childDept, manager!);
             return empDto is null ? NotFound(new ResponseMessage("Not Found", false, null!)) : Ok(new ResponseMessage("Employee Record", true, empDto));
         }
 

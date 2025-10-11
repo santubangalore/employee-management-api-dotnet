@@ -14,5 +14,7 @@ namespace EmployeeManagement.Application.Interfaces
         Task<Response> UpdateTimeSheetDetail(TimeSheetSummary summary);
         Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry);
         Task<IEnumerable<TimeSheetCalendar>> GetWeeklyCalendar(int year);
+        Task<IEnumerable<TimeSheetSummary>> GetSummariesForReportees( string EmailId);
+
     }
 }

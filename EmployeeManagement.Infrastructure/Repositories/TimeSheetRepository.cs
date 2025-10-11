@@ -2,8 +2,10 @@
 using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Application.Records;
 using EmployeeManagement.Domain.Entities;
+using EmployeeManagement.Domain.models;
 using EmployeeManagement.Infrastructure.Data;
 using EmployeeManagement.Infrastructure.Shared;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -31,9 +33,24 @@ namespace EmployeeManagement.Infrastructure.Repositories
             }
         }
 
-        public Task<Response> DeleteAsync(TimeSheetSummary entity)
+        public async Task<Response> DeleteAsync(TimeSheetSummary entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var timesheet = await FindByIdAsync(entity.Id);
+                if (timesheet == null)
+                {
+                    return new Response(false, "timesheet not found");
+                }
+                dbcontext.TimeSheetsSummary.Remove(timesheet);
+                await dbcontext.SaveChangesAsync();
+                return new Response(true, "Timesheet deleted");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error happened while deleting Timesheet");
+            }
         }
 
         public Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry)
@@ -41,15 +58,16 @@ namespace EmployeeManagement.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<TimeSheetSummary> FindByIdAsync(int Id)
+        public async Task<TimeSheetSummary> FindByIdAsync(int Id)
         {
-            throw new NotImplementedException();
+            var timeSheetObj = await dbcontext.TimeSheetsSummary.FindAsync(Id);
+            return timeSheetObj!;
         }
 
         public async Task<IEnumerable<TimeSheetSummary>> GetSummariesAsync(DateTime startDate, DateTime endDate, int EmployeeId)
         {
             var summaryExists = await dbcontext.TimeSheetsSummary.Where(q => q.EmployeeId == EmployeeId && q.StartDate == startDate && q.EndDate == endDate).ToListAsync();
-            if (summaryExists.Any()) { return null; }
+            if (!summaryExists.Any()) { return null; }
             return summaryExists.ToList();
         }
 
@@ -67,7 +85,6 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 LogException.LogExceptions(ex);
                 throw new Exception($"Error in GetAllAsync,TimeSheetRepository {ex.Message}");
             }
-     
         }
 
         public async Task<TimeSheetSummary> GetByAsync(Expression<Func<TimeSheetSummary, bool>> predicate)
@@ -155,15 +172,14 @@ namespace EmployeeManagement.Infrastructure.Repositories
             { 
                 var timesheetDetails=entity.Details;
 
-                var summary = await FindByIdAsync(entity.Id);
-                if (summary is null)
+                if (entity is null|| entity.Details==null)
                 {
-                    return new Response(false, "Timesheet summary not found");
+                    return new Response(false, "Timesheet invalid");
                 }
-                dbcontext.Entry(summary).State = EntityState.Detached;
+                dbcontext.Entry(entity).State = EntityState.Detached;
                 dbcontext.TimeSheetsSummary.Update(entity);
                 // no need to update child records.
-               // var details = dbcontext.TimeSheetDetails.UpdateRange(timesheetDetails);
+                // var details = dbcontext.TimeSheetDetails.UpdateRange(timesheetDetails);
                 
                 await dbcontext.SaveChangesAsync();
                 return new Response(true, "Timesheet  updated");
@@ -178,6 +194,41 @@ namespace EmployeeManagement.Infrastructure.Repositories
         public Task<Response> UpdateTimeSheetDetail(TimeSheetSummary summary)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<TimeSheetSummary>> GetSummariesForReportees(string EmailId)
+        {
+            try
+            {
+                var manager = dbcontext.Employees.Where(q=>q.EmailId==EmailId).FirstOrDefault();
+                if (manager is null) return null;
+                var employees = dbcontext.Employees.Where(q=>q.ReportingTo==manager!.EmployeeId);
+
+                var affectedRows = from timesheet in dbcontext.TimeSheetsSummary
+                                   join employee in employees on
+                                   timesheet.EmployeeId equals employee.EmployeeId  
+                                                       
+                                   select new TimeSheetSummary
+                                   {
+                                       Id= timesheet.Id,
+                                       EmployeeId = employee.EmployeeId,
+                                       StartDate = timesheet.StartDate,
+                                       EndDate = timesheet.EndDate,
+                                       ApprovalDate = timesheet.ApprovalDate,
+                                       ApprovalStatus = timesheet.ApprovalStatus,
+                                       SubmitDate = timesheet.SubmitDate,
+                                       BillableHours= timesheet.BillableHours,
+                                       NonBillableHours= timesheet.NonBillableHours,
+
+                                   };
+                                    
+                return await affectedRows.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
         }
     }
 }

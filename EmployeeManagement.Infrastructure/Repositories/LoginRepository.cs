@@ -129,12 +129,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
 
-        public async Task<bool> IsAdmin(string EmailId)
+        public async Task<string> IsAdmin(string EmailId)
         {
             var emp= await dbcontext.Employees.Where(q=>q.EmailId==EmailId).SingleOrDefaultAsync();
-            if (emp == null) return false;
-            if (emp.Role.ToLower() == "admin") return true;
-            return false;
+            if (emp == null) return null;
+            return emp.Role;
         }
     }
 }

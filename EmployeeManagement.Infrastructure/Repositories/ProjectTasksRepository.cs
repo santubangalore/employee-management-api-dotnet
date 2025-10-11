@@ -113,12 +113,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
         {
             var parameter = new SqlParameter("@ProjectId", projectId);
 
-            var res = await dbContext.Set<ProjectTasksResult>()
-                                 .FromSqlRaw("EXEC GetTasksListByProject @ProjectId", parameter)
-                                 .ToListAsync();
 
+                var affectedRows = dbContext.Database.SqlQueryRaw<ProjectTasksResult>("EXEC GetTasksListByProject {0}", projectId)
+                   .ToList().DistinctBy(q=>q.TaskId );
 
-            return res;
+            return affectedRows;
         }
         public async Task<Response> UpdateAsync(ProjectTasks entity)
         {
