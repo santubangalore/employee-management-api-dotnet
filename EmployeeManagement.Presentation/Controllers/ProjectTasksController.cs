@@ -33,7 +33,7 @@ namespace EmployeeManagement.Presentation.Controllers
         {
             var entity = ConvertTasks.ConvertToEntity(projectTask);
             var response = await projectTaskRepo.CreateAsync(entity);
-            return response.flag == false ? NotFound(response) : Ok(response);
+            return response.flag == false ? throw new Exception(response.Message) : Ok(response);
         }
 
         [HttpPut("UpdateProjectTask")]

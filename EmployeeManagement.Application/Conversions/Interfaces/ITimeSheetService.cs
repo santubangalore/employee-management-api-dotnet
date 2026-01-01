@@ -16,7 +16,7 @@ namespace EmployeeManagement.Application.Conversions.Interfaces
         Task<int> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, string EmailAddress);
         Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetOfReportees(string EmailId);
         Task<IEnumerable<TimeSheetSummaryDTO>> GetTimeSheetByEmployeeId(string EmailId);
-        Task<IEnumerable<TimeSheetDetailsDTO>> GetTimeSheetDetail(TimeSheetSummary summary);
+        Task<IEnumerable<TimeSheetDetails>> GetTimeSheetDetail(TimeSheetSummary summary);
         Task<Response> ApproveRejectTimesheetAsync(TimeSheetSummaryDTO timesheetDto);
 
         //submit after re-work or re-submit

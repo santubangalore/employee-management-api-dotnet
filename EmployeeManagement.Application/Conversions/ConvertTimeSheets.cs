@@ -1,5 +1,7 @@
 ﻿using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Domain.Entities;
+using EmployeeManagement.Domain.models;
+using System.Collections.Generic;
 
 namespace EmployeeManagement.Application.Conversions
 {
@@ -58,25 +60,44 @@ namespace EmployeeManagement.Application.Conversions
             }
         }
 
-        public static TimeSheetSummaryDTO ConvertToDTO(TimeSheetSummary timeSheet)
+        public static TimeSheetSummaryDTO ConvertToDTO(TimeSheetSummary timeSheet,List<ProjectTasksResult> tasks, string ProjectName)
         {
             if (timeSheet is null) return null;
             var lrq = new TimeSheetSummaryDTO()
             {
+                Id=timeSheet.Id,
                 EmployeeId = timeSheet.EmployeeId,
                 StartDate = timeSheet.StartDate,
                 EndDate = timeSheet.EndDate,
                 ProjectId = timeSheet.ProjectId,
+                ProjectName=ProjectName,
                 SubmitDate = timeSheet.SubmitDate,
                 ApprovalDate = timeSheet.ApprovalDate,
                 ApprovedBy = timeSheet.ApprovedBy,
                 ApprovalStatus = timeSheet.ApprovalStatus,
                 BillableHours  = timeSheet.BillableHours,
                 NonBillableHours = timeSheet.NonBillableHours,
-                Details = ConvertToDetailTimeSheetDto(timeSheet.Details),
+                Details = ConvertToDetailTimeSheetDto(timeSheet.Details,  tasks),
             };
             return lrq;
         }
+        private static List<TimeSheetDetailsDTO> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details,  List<ProjectTasksResult> tasks)
+        {
+            var timeSheetDetails = from TimeSheetDetails det in details
+                                   join task in tasks on det.TaskId equals task.TaskId
+                                   select new TimeSheetDetailsDTO()
+                                   {
+                                       TimesheetSummaryId = det.TimesheetSummaryId,
+                                       Date = det.Date,
+                                       TaskId = det.TaskId,
+                                       TaskName=task.TaskName,
+                                       Hours = det.Hours,
+                                       AttStatus = det.AttStatus,
+                                       Id = det.Id,
+                                   };
+            return timeSheetDetails.ToList();
+        }
+
         private static List<TimeSheetDetailsDTO> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details)
         {
             var timeSheetDetails = from TimeSheetDetails det in details
@@ -91,7 +112,8 @@ namespace EmployeeManagement.Application.Conversions
                                    };
             return timeSheetDetails.ToList();
         }
-        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTOs(IEnumerable<TimeSheetSummary> timeSheets,IEnumerable<Employee> employees)
+        public static IEnumerable<TimeSheetSummaryDTO> ConvertToDTOs(IEnumerable<TimeSheetSummary> timeSheets, 
+            IEnumerable<Employee> employees)
         {
             if (timeSheets is null|| timeSheets.Count()==0) return null;
             List<TimeSheetSummaryDTO> timeSheetSummaryDTOs = new List<TimeSheetSummaryDTO>();

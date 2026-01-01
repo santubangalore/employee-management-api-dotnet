@@ -79,7 +79,8 @@ namespace EmployeeManagement.Infrastructure.Repositories
         {
             try
             {
-                var response = await dbContext.Projects.AsNoTracking().ToListAsync();
+                var response = await dbContext.Projects.AsNoTracking().Include(p=>p.ProjectTasks).ToListAsync();
+
                 return response is null ? null! : response;
             }
             catch (Exception ex)

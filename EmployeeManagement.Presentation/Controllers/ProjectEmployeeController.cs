@@ -24,6 +24,18 @@ namespace EmployeeManagement.Presentation.Controllers
             var list =ConvertProjectEmployee.ConvertToDtos(projectEmployees, projectRecords);
             return list!.Any() ? Ok(new ResponseMessage("successs", true, list)) : NotFound("Conversion Error !");
         }
+        
+        [HttpGet("GetProjectEmployeeDetail/{ProjectEmpId}")]
+        public async Task<ActionResult<ProjectEmployeeDTO>> GetProjectEmployeeDetail(int ProjectEmpId)
+        {
+            var projectEmployee = await projectEmployeeRepo.FindByIdAsync(ProjectEmpId);
+            if (projectEmployee is null)
+            {
+                return BadRequest("No matching Record found in the database");
+            }
+            var prjEmpDtoObj = ConvertProjectEmployee.ConvertToDto(projectEmployee);
+            return prjEmpDtoObj is null ? Ok(new ResponseMessage("successs", true, prjEmpDtoObj)) : BadRequest("Conversion Error !");
+        }
 
         [HttpGet("GetEmployeeByProject/{ProjectId}")]
         public async Task<ActionResult<IEnumerable<ProjectEmployeeDTO>>> GetEmployeeByProject(int ProjectId)

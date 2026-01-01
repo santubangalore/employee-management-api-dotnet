@@ -16,7 +16,6 @@ namespace EmployeeManagement.Presentation.Controllers
         /// <param name="EmployeeId"></param>
         /// <returns></returns>
         [HttpGet("GetAllTimeSheets")]
-        [Authorize]
         public async Task<ActionResult<IEnumerable<TimeSheetSummaryDTO>>> GetAll() 
         {
             var response =await timeSheetService.GetAllAsync();
@@ -54,6 +53,15 @@ namespace EmployeeManagement.Presentation.Controllers
             return response==null? NotFound(new ResponseMessage("No timesheet found",false,null!)): Ok(new ResponseMessage("List of timesheets", true, response));
         }
 
+        [HttpGet("GetTimeSheet/{TimeSheetId}")]
+        public async Task<ActionResult<ResponseMessage>> GetTimeSheet(int TimeSheetId)
+        {
+            var response = await timeSheetService.FindByIdAsync(TimeSheetId);
+            if (response is null) return NotFound(new ResponseMessage("Not found", false, null));
+           // var details= 
+            return Ok(new ResponseMessage("Timesheet", true, response));
+        }
+
         /// <summary>
         /// Check if employee has submitted timesheet for this week already.
         /// </summary>
@@ -85,6 +93,13 @@ namespace EmployeeManagement.Presentation.Controllers
             return Ok(new ResponseMessage("Timesheet created", true, response));
         }
 
+        [HttpPut("UpdateEmployeeTimeSheet")]
+        public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
+        {
+            var response = await timeSheetService.UpdateAsync(timeSheetDto);
+            if (!response.flag) { return BadRequest(response); ; }
+            return Ok(new ResponseMessage("Timesheet updates", true, response));
+        }
         /// <summary>
         /// Add to db/update the status of a weekly timesheet
         /// Approval time also same endpoint is used

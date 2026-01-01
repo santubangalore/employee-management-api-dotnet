@@ -317,6 +317,9 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ProjectStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -483,8 +486,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.HasIndex("ProjectId");
-
                     b.ToTable("TimeSheetsSummary");
                 });
 
@@ -568,15 +569,7 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EmployeeManagement.Domain.Entities.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Employee");
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Project", b =>

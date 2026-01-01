@@ -12,7 +12,8 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagement.Infrastructure.Services
 {
-    internal class TimeSheetService(ITimeSheetSummary timeSheetRepo, IEmployee employeeRepo, IProjectTasks projectTasksRepo) : ITimeSheetService
+    internal class TimeSheetService(ITimeSheetSummary timeSheetRepo, IEmployee employeeRepo, 
+        IProjectTasks projectTasksRepo,IProject projectRepo) : ITimeSheetService
     {
         public async Task<Response> CreateAsync(TimeSheetSummaryDTO timesheetDto)
         {
@@ -68,15 +69,20 @@ namespace EmployeeManagement.Infrastructure.Services
             throw new NotImplementedException();
         }
 
-        public async Task<TimeSheetSummaryDTO> FindByIdAsync(int Id)
+        public async Task<TimeSheetSummaryDTO> FindByIdAsync(int TimeSheetId)
         {
             try
             {
-                if (Id <= 0) { return null; }
-                var TimeSheet = await timeSheetRepo.FindByIdAsync(Id);
+                if (TimeSheetId <= 0) { return null; }
+                var TimeSheet = await timeSheetRepo.FindByIdAsync(TimeSheetId);
+                var details= await timeSheetRepo.GetTimeSheetDetail(TimeSheet);
+                TimeSheet.Details = details.ToList();
+                var tasks =await projectTasksRepo.GetResultsFromStoredProcedure(TimeSheet.ProjectId);
+                var Project = await projectRepo.FindByIdAsync(TimeSheet.ProjectId);
                 var employee = await employeeRepo.GetByAsync(_ => _.EmployeeId == TimeSheet.EmployeeId);
-                var TimeSheetDto = ConvertTimeSheets.ConvertToDTO(TimeSheet);
+                var TimeSheetDto = ConvertTimeSheets.ConvertToDTO(TimeSheet,tasks.ToList(), Project!.ProjectName);
                 TimeSheetDto.EmpName = employee.EmployeeName;
+
                 return TimeSheetDto;
             }
             catch (Exception ex)
@@ -130,9 +136,18 @@ namespace EmployeeManagement.Infrastructure.Services
             }
         }
 
-        public Task<IEnumerable<TimeSheetDetailsDTO>> GetTimeSheetDetail(TimeSheetSummary timesheetDto)
+        public async Task<IEnumerable<TimeSheetDetails>> GetTimeSheetDetail(TimeSheetSummary timesheetSummary)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var details = await timeSheetRepo.GetTimeSheetDetail(timesheetSummary);
+                return details;
+            }
+            catch (Exception exx)
+            {
+                LogException.LogExceptions(exx);
+                throw;
+            }
         }
 
         public async Task<int> GetTimeSheetsByEmployeeId(DateTime fromDate, DateTime toDate, string EmpEmailId)
@@ -166,7 +181,13 @@ namespace EmployeeManagement.Infrastructure.Services
                 if (employee is null) { return null; }
                 var timeSheetEntity = await timeSheetRepo.GetByAsync(_ => _.StartDate == timesheetDto.StartDate && _.EndDate == timesheetDto.EndDate && _.EmployeeId == timesheetDto.EmployeeId);
                 if (timeSheetEntity == null) { return null; }
-                var response = await timeSheetRepo.UpdateAsync(timeSheetEntity);
+                var billableNonBillabe = await this.CalcBillableAndNonBillableHrs(timesheetDto);
+                timesheetDto.BillableHours = billableNonBillabe.Billable;
+                timesheetDto.NonBillableHours = billableNonBillabe.NonBillable;
+                var entity = ConvertTimeSheets.ConvertToEntity(timesheetDto, employee);
+                entity.Id   = timesheetDto.Id;
+                entity.Details=ConvertTimeSheets.ConvertToDetailTimeSheet(timesheetDto.Details);
+                var response = await timeSheetRepo.UpdateAsync(entity);
                 return response;
             }catch (Exception ex)
             {

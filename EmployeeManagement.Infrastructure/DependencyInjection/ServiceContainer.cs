@@ -47,6 +47,7 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
             services.AddScoped<IProjectEmployeeService, ProjectEmployeeService>();
             services.AddScoped<IProjectTasksService, ProjectTasksService>();
             services.AddScoped<ITimeSheetService, TimeSheetService>();
+            services.AddScoped<IMailService, MailService>();
 
             return services;
         }

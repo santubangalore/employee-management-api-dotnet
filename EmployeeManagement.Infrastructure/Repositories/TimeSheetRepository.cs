@@ -53,14 +53,26 @@ namespace EmployeeManagement.Infrastructure.Repositories
             }
         }
 
-        public Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry)
+        public async Task<Response> DeleteTimeSheetDetail(TimeSheetSummary summry)
         {
-            throw new NotImplementedException();
+            try { 
+                foreach (TimeSheetDetails details in summry.Details) {
+                    dbcontext.Entry(details).State=EntityState.Detached;
+                    var result = dbcontext.TimeSheetDetails.Remove(details);
+                }
+                dbcontext.SaveChanges(true);
+                return new Response(true, "success");
+            }
+            catch (Exception ex) {
+                throw;
+            }
         }
 
         public async Task<TimeSheetSummary> FindByIdAsync(int Id)
         {
             var timeSheetObj = await dbcontext.TimeSheetsSummary.FindAsync(Id);
+            if (timeSheetObj== null) { return null; }
+           
             return timeSheetObj!;
         }
 
@@ -92,6 +104,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
             try
             {
                 var timesheetSummary = await dbcontext.TimeSheetsSummary.Where(predicate).FirstOrDefaultAsync();
+                
                 return timesheetSummary is not null ? timesheetSummary! : null!;
             }
             catch (Exception ex)
@@ -171,15 +184,15 @@ namespace EmployeeManagement.Infrastructure.Repositories
             try
             { 
                 var timesheetDetails=entity.Details;
-
-                if (entity is null|| entity.Details==null)
+                var timesheet =  dbcontext.TimeSheetsSummary.Where(q => q.Id == entity.Id).Include(q => q.Details).SingleOrDefault();
+                if (timesheet is null)
                 {
                     return new Response(false, "Timesheet invalid");
                 }
-                dbcontext.Entry(entity).State = EntityState.Detached;
+
+                await this.DeleteTimeSheetDetail(timesheet);
+                dbcontext.Entry(timesheet).State = EntityState.Detached;
                 dbcontext.TimeSheetsSummary.Update(entity);
-                // no need to update child records.
-                // var details = dbcontext.TimeSheetDetails.UpdateRange(timesheetDetails);
                 
                 await dbcontext.SaveChangesAsync();
                 return new Response(true, "Timesheet  updated");

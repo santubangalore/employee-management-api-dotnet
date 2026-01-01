@@ -23,7 +23,6 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 return new Response(true, "Record created successfully");
             else return new Response(false, "Error creating record");
         }
-
         public async Task<Response> DeleteAsync(Employee entity)
         {
             try
