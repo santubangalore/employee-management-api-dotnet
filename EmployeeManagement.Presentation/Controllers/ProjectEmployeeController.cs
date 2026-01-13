@@ -1,7 +1,7 @@
-﻿using EmployeeManagement.Application;
-using EmployeeManagement.Application.Conversions;
+﻿using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Application.Records;
 using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 

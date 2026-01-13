@@ -1,6 +1,6 @@
-﻿using EmployeeManagement.Application;
-using EmployeeManagement.Application.Conversions.Interfaces;
+﻿using EmployeeManagement.Application.Conversions.Interfaces;
 using EmployeeManagement.Application.DTOs;
+using EmployeeManagement.Application.Records;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -93,6 +93,13 @@ namespace EmployeeManagement.Presentation.Controllers
             return Ok(new ResponseMessage("Timesheet created", true, response));
         }
 
+        [HttpPost("SaveEmployeeTimeSheet")]
+        public async Task<ActionResult<ResponseMessage>> TestCreateTimeSheetAsync(TestTimeSheetSummaryDTO timeSheetDto)
+        {
+            var response = await timeSheetService.CreateTestAsync(timeSheetDto);
+            if (!response.flag) { return BadRequest(response); ; }
+            return Ok(new ResponseMessage("Timesheet created", true, response));
+        }
         [HttpPut("UpdateEmployeeTimeSheet")]
         public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
         {

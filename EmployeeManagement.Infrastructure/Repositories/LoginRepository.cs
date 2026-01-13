@@ -91,6 +91,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {   EmailId = user.EmailId,
                 UserName = user.EmployeeName,
                 AccessToken = createToken(user),
+                Role= user.Role,
                 RefreshToken = await this.GenerateAndSaveRefreshTokenAsync(user),
             };
             return response;

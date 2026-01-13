@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagement.Infrastructure.Repositories
 {
-    public class LeaveTypesRepository(EmployeeMgmtContext dbcontext) : ILeaveTypes
+    public class LeaveTypesRepository(EmployeeMgmtContext dbContext) : ILeaveTypes
     {
         public async Task<Response> CreateAsync(LeaveTypes entity)
         {
@@ -18,8 +18,8 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 return new Response(false, $"{entity.LeaveTypeName} already exists");
             }
 
-            var currentEntity = dbcontext.LeaveTypes.Add(entity).Entity;
-            await dbcontext.SaveChangesAsync();
+            var currentEntity = dbContext.LeaveTypes.Add(entity).Entity;
+            await dbContext.SaveChangesAsync();
             if (currentEntity is not null && currentEntity.LeaveTypeId > 0)
             {
                 return new Response(true, $"{entity.LeaveTypeName} added to Database successfully");
@@ -42,7 +42,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
         {
             try
             {
-                var leaveTypes = await dbcontext.LeaveTypes.AsNoTracking().ToListAsync();
+                var leaveTypes = await dbContext.LeaveTypes.AsNoTracking().ToListAsync();
                 return leaveTypes is not null ? leaveTypes : null!;
             }
             catch (Exception exception)
@@ -56,7 +56,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
         {
             try
             {
-                var leaveType = await dbcontext.LeaveTypes.Where(predicate).FirstOrDefaultAsync();
+                var leaveType = await dbContext.LeaveTypes.Where(predicate).FirstOrDefaultAsync();
                 return leaveType is not null ? leaveType : null!;
             }
             catch (Exception exception)
@@ -66,9 +66,25 @@ namespace EmployeeManagement.Infrastructure.Repositories
             }
         }
 
-        public Task<Response> UpdateAsync(LeaveTypes entity)
+        public async Task<Response> UpdateAsync(LeaveTypes entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var leaveBal = await FindByIdAsync(entity.LeaveTypeId);
+                if (leaveBal is null)
+                {
+                    return new Response(false, "Leave balance not found");
+                }
+                dbContext.Entry(leaveBal).State = EntityState.Detached;
+                dbContext.LeaveTypes.Update(entity);
+                await dbContext.SaveChangesAsync();
+                return new Response(true, "Leave balance updated");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error happened while updating Leave balance");
+            }
         }
     }
 }

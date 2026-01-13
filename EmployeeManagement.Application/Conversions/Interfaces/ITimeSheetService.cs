@@ -8,6 +8,8 @@ namespace EmployeeManagement.Application.Conversions.Interfaces
     public interface ITimeSheetService
     {
         Task<Response> CreateAsync(TimeSheetSummaryDTO entity);
+        Task<Response> CreateTestAsync(TestTimeSheetSummaryDTO entity);
+       // Task<Response> TestCalcBillableAndNonBillableHrs(TestTimeSheetSummaryDTO timesheetDto);
         Task<Response> UpdateAsync(TimeSheetSummaryDTO entity);
         Task<Response> DeleteAsync(TimeSheetSummary entity);
         Task<IEnumerable<TimeSheetSummaryDTO>> GetAllAsync();

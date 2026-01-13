@@ -6,6 +6,10 @@ namespace EmployeeManagement.Infrastructure.Data
 {
     public class EmployeeMgmtContext(DbContextOptions<EmployeeMgmtContext> options) :DbContext(options)
     {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
         public DbSet<ParentDepartment> ParentDepartments { get; set; }
         public DbSet<ChildDepartment> ChildDepartments { get; set; }
         public DbSet<Employee> Employees { get; set; }
@@ -19,7 +23,14 @@ namespace EmployeeManagement.Infrastructure.Data
         public DbSet<TimeSheetDetails> TimeSheetDetails { get; set; }
         public DbSet<TimeSheetSummary> TimeSheetsSummary { get; set; }
         public DbSet<Onboarding> Onboarding { get; set; }
-
+        public DbSet<EmployeeSalary> EmployeeSalary { get; set; }
+        public DbSet<AllowancesTypes> AllowancesTypes { get; set; }
+        public DbSet<EmployeeAllowances> EmployeeAllowances { get; set; }
+        public DbSet<TaxDeductions> TaxDeductions { get; set; }
+        public DbSet<EmployeeTaxRebate> EmployeeTaxRebate { get; set; }
+        public DbSet<TaxRebate> TaxRebateCodes { get; set; }
+        public DbSet<TaxSlab> TaxSlabs { get; set; }
+        public DbSet<EmployeeTaxRebate> EmployeeTaxRebates { get; set; }
         public DbSet<ProjectTasksResult> ProjectTasksResult {  get; set; }
     }
 }

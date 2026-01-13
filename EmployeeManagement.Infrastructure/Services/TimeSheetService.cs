@@ -9,6 +9,8 @@ using EmployeeManagement.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EmployeeManagement.Infrastructure.Services
 {
@@ -35,6 +37,26 @@ namespace EmployeeManagement.Infrastructure.Services
             }
         }
 
+        public async Task<Response> CreateTestAsync(TestTimeSheetSummaryDTO timesheetDto)
+        {
+            try
+            {
+                var employee = await employeeRepo.GetByAsync(_ => _.EmailId == timesheetDto.Employee.EmailId);
+                if (employee is null) { return new Response(false, "Employee email Id not found"); }
+                var billableNonBillabe = await this.TestCalcBillableAndNonBillableHrs(timesheetDto);
+                //timesheetDto.BillableHours = billableNonBillabe.Billable;
+                //timesheetDto.NonBillableHours = billableNonBillabe.NonBillable;
+                //var timeSheetEntity = ConvertTimeSheets.ConvertToEntity(timesheetDto, employee);
+                // var response = await timeSheetRepo.CreateAsync(timeSheetEntity);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
+        }
+
         private async Task< HourType > CalcBillableAndNonBillableHrs(TimeSheetSummaryDTO timesheetDto)
         {
             HourType retval=new HourType();
@@ -57,6 +79,42 @@ namespace EmployeeManagement.Infrastructure.Services
             return new HourType(billableHrs, nonBillableHrs);
         }
 
+      
+        private async Task<HourType> TestCalcBillableAndNonBillableHrs(TestTimeSheetSummaryDTO timesheetDto)
+        {
+            List<TaskHours> TaskhourList = new List<TaskHours>();
+           
+            HourType retval = new HourType();
+            var timeSheetDetail1 = from p in timesheetDto.Details
+                                  group p by p.TaskId into g
+                                  select new
+                                  {
+                                      TaskId= g.Key,
+                                      attendance = g.SelectMany(p =>  p.attendance )
+                                  };
+
+            foreach(var item in timeSheetDetail1)
+            {
+                var taskid= item.TaskId;
+                var TaskDayTot= from p in item.attendance
+                                group p by p.Date into g
+                                select new 
+                                {
+                                    Date= g.Key,
+                                    Hours= g.Sum(q=>q.Hours)
+                                };
+                foreach (var item1 in TaskDayTot)
+                {
+                    TaskhourList.Add(
+                        new TaskHours(taskid.ToString(), item1.Date, item1.Hours)
+                    );
+                }
+
+            }
+            int billableHrs = 0, nonBillableHrs = 0;
+          
+            return new HourType(billableHrs, nonBillableHrs);
+        }
         public async Task<Response> DeleteAsync(TimeSheetSummary timesheet)
         {
            
@@ -253,5 +311,8 @@ namespace EmployeeManagement.Infrastructure.Services
                 throw;
             }
         }
+
+       
     }
+     record TaskHours(string TaskId, DateTime date, int Hours);
 }

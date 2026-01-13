@@ -1,6 +1,6 @@
-﻿using EmployeeManagement.Application;
-using EmployeeManagement.Application.DTOs;
+﻿using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Application.Records;
 using EmployeeManagement.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

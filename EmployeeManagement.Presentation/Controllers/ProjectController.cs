@@ -1,7 +1,7 @@
-﻿using EmployeeManagement.Application;
-using EmployeeManagement.Application.Conversions;
+﻿using EmployeeManagement.Application.Conversions;
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Application.Records;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.Presentation.Controllers

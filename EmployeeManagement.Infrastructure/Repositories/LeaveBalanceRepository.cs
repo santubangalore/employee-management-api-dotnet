@@ -4,7 +4,6 @@ using EmployeeManagement.Domain.Entities;
 using EmployeeManagement.Infrastructure.Data;
 using EmployeeManagement.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace EmployeeManagement.Infrastructure.Repositories

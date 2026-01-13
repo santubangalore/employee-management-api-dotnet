@@ -22,6 +22,31 @@ namespace EmployeeManagement.Infrastructure.data.migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.AllowancesTypes", b =>
+                {
+                    b.Property<int>("AllowanceTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AllowanceTypeId"));
+
+                    b.Property<string>("AllowanceDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllowanceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AllowanceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AllowanceTypeId");
+
+                    b.ToTable("AllowancesTypes");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.ChildDepartment", b =>
                 {
                     b.Property<int>("ChildDeptId")
@@ -40,6 +65,40 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.HasKey("ChildDeptId");
 
                     b.ToTable("ChildDepartments");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.Education", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DegreeCertificateName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OnboardingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UniversityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingId");
+
+                    b.ToTable("Education");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Employee", b =>
@@ -109,6 +168,108 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeAllowances", b =>
+                {
+                    b.Property<int>("EployeeAllowancesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EployeeAllowancesId"));
+
+                    b.Property<int>("AllowanceAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AllowanceTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FinYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("EployeeAllowancesId");
+
+                    b.HasIndex("EmployeeSalaryId");
+
+                    b.ToTable("EmployeeAllowances");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeSalary", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BasicSalary")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FinYear")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("PFAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TakeHomeSalary")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotDeductions")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmployeeSalary");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeTaxRebate", b =>
+                {
+                    b.Property<int>("EmployeeTaxRebateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployeeTaxRebateId"));
+
+                    b.Property<string>("DocumentDetails")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EmployeeRebateAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FinYear")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RebateId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaxDeductionsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TaxRebateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeeTaxRebateId");
+
+                    b.HasIndex("TaxDeductionsId");
+
+                    b.HasIndex("TaxRebateId");
+
+                    b.ToTable("EmployeeTaxRebate");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.LeaveBalance", b =>
@@ -213,10 +374,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClientName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -411,6 +568,93 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.ToTable("Roles");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxDeductions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FinYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InsuranceAmt")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PfDeduction")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProfTax")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotRebateAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotTaxAmount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeSalaryId")
+                        .IsUnique();
+
+                    b.ToTable("TaxDeductions");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxRebate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FinYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RebateAmount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RebateCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("RebateDesc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TaxRebateCodes");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxSlab", b =>
+                {
+                    b.Property<int>("TaxSlabId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaxSlabId"));
+
+                    b.Property<float>("TaxPercent")
+                        .HasColumnType("real");
+
+                    b.Property<int>("TaxSlabAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("int");
+
+                    b.HasKey("TaxSlabId");
+
+                    b.ToTable("TaxSlabs");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.TimeSheetDetails", b =>
                 {
                     b.Property<int>("Id")
@@ -489,6 +733,42 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.ToTable("TimeSheetsSummary");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.WorkExperience", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactPerson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OnboardingId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ToDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OnboardingId");
+
+                    b.ToTable("WorkExperience");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.models.ProjectTasksResult", b =>
                 {
                     b.Property<int>("Id")
@@ -510,11 +790,38 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.ToTable("ProjectTasksResult");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.Education", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.Onboarding", null)
+                        .WithMany("Educations")
+                        .HasForeignKey("OnboardingId");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Employee", b =>
                 {
                     b.HasOne("EmployeeManagement.Domain.Entities.Project", null)
                         .WithMany("Employees")
                         .HasForeignKey("ProjectId");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeAllowances", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.EmployeeSalary", null)
+                        .WithMany("Allowences")
+                        .HasForeignKey("EmployeeSalaryId");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeTaxRebate", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.TaxDeductions", null)
+                        .WithMany("TaxRebate")
+                        .HasForeignKey("TaxDeductionsId");
+
+                    b.HasOne("EmployeeManagement.Domain.Entities.TaxRebate", "TaxRebate")
+                        .WithMany()
+                        .HasForeignKey("TaxRebateId");
+
+                    b.Navigation("TaxRebate");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.LeaveRequest", b =>
@@ -550,6 +857,15 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxDeductions", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.EmployeeSalary", null)
+                        .WithOne("Deductions")
+                        .HasForeignKey("EmployeeManagement.Domain.Entities.TaxDeductions", "EmployeeSalaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.TimeSheetDetails", b =>
                 {
                     b.HasOne("EmployeeManagement.Domain.Entities.TimeSheetSummary", "TimeSheetSummary")
@@ -572,11 +888,38 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.WorkExperience", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.Onboarding", null)
+                        .WithMany("WorkExperiences")
+                        .HasForeignKey("OnboardingId");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeSalary", b =>
+                {
+                    b.Navigation("Allowences");
+
+                    b.Navigation("Deductions")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.Onboarding", b =>
+                {
+                    b.Navigation("Educations");
+
+                    b.Navigation("WorkExperiences");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Project", b =>
                 {
                     b.Navigation("Employees");
 
                     b.Navigation("ProjectTasks");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxDeductions", b =>
+                {
+                    b.Navigation("TaxRebate");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.TimeSheetSummary", b =>

@@ -34,21 +34,25 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
             services.AddScoped<IProjectTasks, ProjectTasksRepository>();
 
             // Services
-      
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IChildDepartmentService, DepartmentService>();
             services.AddScoped<ILeaveReaquestService, LeaveRequestService>();
             services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
-            //services.AddScoped<ILeaveTypes, LeaveTypesRepository>();
-
             services.AddScoped<IParentDepartmentService, DepartmentService>();
             services.AddScoped<IOnboardingService, OnboardingService>();
+            //services.AddScoped<ILeaveTypes, LeaveTypesRepository>();
+
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IProjectEmployeeService, ProjectEmployeeService>();
             services.AddScoped<IProjectTasksService, ProjectTasksService>();
             services.AddScoped<ITimeSheetService, TimeSheetService>();
             services.AddScoped<IMailService, MailService>();
 
+            services.AddScoped<IEmployeeSalary, EmployeeSalaryRepository>();
+            services.AddScoped<ITaxRebate, TaxRebateRepository>();
+            services.AddScoped<ITaxSlabs, TaxRebateRepository>();
+            services.AddScoped<IAllowanceTypes, AllowanceTypesRepository>();
+            
             return services;
         }
     }
