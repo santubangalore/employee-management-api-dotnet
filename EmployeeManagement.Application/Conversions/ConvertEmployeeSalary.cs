@@ -51,13 +51,14 @@ namespace EmployeeManagement.Application.Conversions
             if (taxDeductions == null) return null;
             var taxDeuctionsDto = new TaxDeductionsDto
             {
-                EmployeeId = taxDeductions.EmployeeSalaryId,
+                EmployeeId = taxDeductions.EmployeeId,
                 FinYear = taxDeductions.FinYear,
                 ProfTax = taxDeductions.ProfTax,
                 PfDeduction = taxDeductions.PfDeduction,
                 TotTaxAmount = taxDeductions.TotTaxAmount,
+                InsuranceAmt = taxDeductions.InsuranceAmt,
                 TotRebateAmount = taxDeductions.TotRebateAmount,
-                TaxRebates =ConvertTaxRebateDto(taxDeductions.TaxRebate)
+                TaxRebates = taxDeductions.TaxRebate is null ? null: ConvertTaxRebateDto(taxDeductions.TaxRebate)
             };
             return taxDeuctionsDto;
         }
@@ -98,7 +99,7 @@ namespace EmployeeManagement.Application.Conversions
         public static EmployeeSalary ConvertSalaryDtoToEntity(EmployeeSalaryDto employeeSalaryDto)
         {
             if (employeeSalaryDto == null) return null;
-            if (employeeSalaryDto.PFAccount == "string") return null;
+            if (employeeSalaryDto.PFAccount == "string" | employeeSalaryDto.PFAccount.Trim()=="") return null;
             var employeeSalary = new EmployeeSalary
             {
                 Id = employeeSalaryDto.Id,
@@ -118,11 +119,12 @@ namespace EmployeeManagement.Application.Conversions
         {
             var taxDeuctions = new TaxDeductions
             {
-                EmployeeSalaryId = taxDeductionsDto.EmployeeId,
+                EmployeeId = taxDeductionsDto.EmployeeId,
                 FinYear = taxDeductionsDto.FinYear,
                 ProfTax = taxDeductionsDto.ProfTax,
                 PfDeduction = taxDeductionsDto.PfDeduction,
                 TotTaxAmount = taxDeductionsDto.TotTaxAmount,
+                InsuranceAmt = taxDeductionsDto.InsuranceAmt,
                 TotRebateAmount = taxDeductionsDto.TotRebateAmount,
                 TaxRebate = ConvertTaxRebateToEntity(taxDeductionsDto.TaxRebates)
             };

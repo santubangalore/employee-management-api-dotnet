@@ -14,6 +14,7 @@ namespace EmployeeManagement.Application.Conversions
                 if (timeSheet is null) return null;
                 var tssumm = new TimeSheetSummary()
                 {
+                    Id  =timeSheet.Id,
                     EmployeeId = employee.EmployeeId,
                     StartDate = timeSheet.StartDate,
                     EndDate = timeSheet.EndDate,
@@ -34,7 +35,7 @@ namespace EmployeeManagement.Application.Conversions
             }
         }
 
-        public static List<TimeSheetDetails> ConvertToDetailTimeSheet(List<TimeSheetDetailsDTO> details)
+        public static List<TimeSheetDetails> ConvertToDetailTimeSheet(List<TimeSheetDetailsDto> details)
         {
             try
             {
@@ -81,11 +82,11 @@ namespace EmployeeManagement.Application.Conversions
             };
             return lrq;
         }
-        private static List<TimeSheetDetailsDTO> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details,  List<ProjectTasksResult> tasks)
+        private static List<TimeSheetDetailsDto> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details,  List<ProjectTasksResult> tasks)
         {
             var timeSheetDetails = from TimeSheetDetails det in details
                                    join task in tasks on det.TaskId equals task.TaskId
-                                   select new TimeSheetDetailsDTO()
+                                   select new TimeSheetDetailsDto()
                                    {
                                        TimesheetSummaryId = det.TimesheetSummaryId,
                                        Date = det.Date,
@@ -98,10 +99,10 @@ namespace EmployeeManagement.Application.Conversions
             return timeSheetDetails.ToList();
         }
 
-        private static List<TimeSheetDetailsDTO> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details)
+        private static List<TimeSheetDetailsDto> ConvertToDetailTimeSheetDto(List<TimeSheetDetails> details)
         {
             var timeSheetDetails = from TimeSheetDetails det in details
-                                   select new TimeSheetDetailsDTO()
+                                   select new TimeSheetDetailsDto()
                                    {
                                        TimesheetSummaryId = det.TimesheetSummaryId,
                                        Date = det.Date,

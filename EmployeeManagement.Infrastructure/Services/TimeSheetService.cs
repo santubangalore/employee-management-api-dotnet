@@ -37,18 +37,39 @@ namespace EmployeeManagement.Infrastructure.Services
             }
         }
 
-        public async Task<Response> CreateTestAsync(TestTimeSheetSummaryDTO timesheetDto)
+        public async Task<Response> UpdateAsync(UpdateTimeSheetSummaryDTO timesheetDto)
         {
             try
             {
+                var timeSheetSummaryDto =  new TimeSheetSummaryDTO()
+                                          {
+                                             EmployeeId = timesheetDto.EmployeeId,
+                                             ApprovalStatus = timesheetDto.ApprovalStatus,
+                                             ApprovalDate = timesheetDto.ApprovalDate,
+                                             StartDate = timesheetDto.StartDate,
+                                             EndDate = timesheetDto.EndDate,
+                                             ApprovedBy = timesheetDto.ApprovedBy,
+                                             SubmitDate = timesheetDto.SubmitDate,
+                                             BillableHours = timesheetDto.BillableHours,
+                                             Details = null,
+                                             Employee=timesheetDto.Employee,
+                                             EmpName = timesheetDto.EmpName,
+                                             Id = timesheetDto.Id,
+                                             NonBillableHours = timesheetDto.NonBillableHours 
+                                          };
                 var employee = await employeeRepo.GetByAsync(_ => _.EmailId == timesheetDto.Employee.EmailId);
                 if (employee is null) { return new Response(false, "Employee email Id not found"); }
-                var billableNonBillabe = await this.TestCalcBillableAndNonBillableHrs(timesheetDto);
-                //timesheetDto.BillableHours = billableNonBillabe.Billable;
-                //timesheetDto.NonBillableHours = billableNonBillabe.NonBillable;
-                //var timeSheetEntity = ConvertTimeSheets.ConvertToEntity(timesheetDto, employee);
-                // var response = await timeSheetRepo.CreateAsync(timeSheetEntity);
-                return null;
+                var billableNonBillabe = await this.NewCalcBillableAndNonBillableHrs(ref timeSheetSummaryDto,timesheetDto);
+                timeSheetSummaryDto.BillableHours= billableNonBillabe.Billable;
+                timeSheetSummaryDto.NonBillableHours= billableNonBillabe.NonBillable;
+
+                var timeSheetEntity = ConvertTimeSheets.ConvertToEntity(timeSheetSummaryDto, employee);
+                //delete earlier
+                var result = await this.DeleteAsync(timeSheetEntity);
+                //add new
+                 timeSheetEntity.Id = 0;
+                 var response = await timeSheetRepo.CreateAsync(timeSheetEntity);
+                return response;
             }
             catch (Exception ex)
             {
@@ -79,13 +100,15 @@ namespace EmployeeManagement.Infrastructure.Services
             return new HourType(billableHrs, nonBillableHrs);
         }
 
-      
-        private async Task<HourType> TestCalcBillableAndNonBillableHrs(TestTimeSheetSummaryDTO timesheetDto)
+        
+        //at the time of updation of TimeSheet
+        //
+        private  Task<HourType> NewCalcBillableAndNonBillableHrs(ref TimeSheetSummaryDTO timesheetSummary, UpdateTimeSheetSummaryDTO timesheetDto)
         {
-            List<TaskHours> TaskhourList = new List<TaskHours>();
+            List<TimeSheetDetailsDto> TaskhourList = new List<TimeSheetDetailsDto>();
            
             HourType retval = new HourType();
-            var timeSheetDetail1 = from p in timesheetDto.Details
+            var timeSheetDetail = from p in timesheetDto.Details
                                   group p by p.TaskId into g
                                   select new
                                   {
@@ -93,31 +116,40 @@ namespace EmployeeManagement.Infrastructure.Services
                                       attendance = g.SelectMany(p =>  p.attendance )
                                   };
 
-            foreach(var item in timeSheetDetail1)
+            foreach(var detail in timeSheetDetail)
             {
-                var taskid= item.TaskId;
-                var TaskDayTot= from p in item.attendance
+                var taskid= detail.TaskId;
+                var TaskDayTot= from p in detail.attendance
                                 group p by p.Date into g
                                 select new 
                                 {
                                     Date= g.Key,
                                     Hours= g.Sum(q=>q.Hours)
                                 };
-                foreach (var item1 in TaskDayTot)
+                foreach (var item in TaskDayTot)
                 {
+                    DateTime dt;
+                    DateTime.TryParse( item.Date,out dt);
                     TaskhourList.Add(
-                        new TaskHours(taskid.ToString(), item1.Date, item1.Hours)
+                        new TimeSheetDetailsDto(0, taskid.ToString(), "", dt, 0, item.Hours, "")
                     );
                 }
-
             }
+            timesheetSummary.Details = TaskhourList;
+
             int billableHrs = 0, nonBillableHrs = 0;
-          
-            return new HourType(billableHrs, nonBillableHrs);
+            foreach (var taskTotalHrs in TaskhourList)
+            {
+                if (taskTotalHrs.TaskId.StartsWith("TSK"))
+                    billableHrs += taskTotalHrs.Hours;
+                else
+                    nonBillableHrs += taskTotalHrs.Hours;
+            }
+            return  Task.FromResult(new HourType(billableHrs, nonBillableHrs));
         }
+
         public async Task<Response> DeleteAsync(TimeSheetSummary timesheet)
         {
-           
             var result = await timeSheetRepo.DeleteAsync(timesheet);
             return result;
         }
@@ -314,5 +346,5 @@ namespace EmployeeManagement.Infrastructure.Services
 
        
     }
-     record TaskHours(string TaskId, DateTime date, int Hours);
+     //record TaskHours(string TaskId, DateTime date, int Hours);
 }

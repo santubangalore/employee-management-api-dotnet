@@ -16,10 +16,10 @@
         public DateTime ApprovalDate { get; set; }
         public int BillableHours { get; set; }
         public int NonBillableHours { get; set; }
-        public List<TimeSheetDetailsDTO> Details { get; set; }
+        public List<TimeSheetDetailsDto> Details { get; set; }
     }
 
-    public class TestTimeSheetSummaryDTO
+    public class UpdateTimeSheetSummaryDTO
     {
         public int Id { get; set; }
         public int EmployeeId { get; set; }
@@ -41,13 +41,13 @@
     public class WeekTimesheet
     {
         public int Id { get; set; }
-        public int TaskId { get; set; }
+        public string TaskId { get; set; }
         public int TimesheetSummaryId { get; set; }
         public List<Attendance> attendance {  get; set; }
     }
     public class Attendance
     {
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
         public int Hours { get; set; }
     }
 }

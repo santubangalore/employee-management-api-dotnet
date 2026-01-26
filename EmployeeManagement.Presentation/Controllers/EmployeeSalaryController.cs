@@ -34,7 +34,7 @@ namespace EmployeeManagement.Presentation.Controllers
         [HttpPost("AddEmployeeSalary")]
         public async Task<ActionResult<ResponseMessage>> AddEmployeeSalary([FromBody] EmployeeSalaryDto salary)
         {
-            if (salary.PFAccount=="string") return BadRequest(new ResponseMessage("Invalid PF account num provided", false, null));
+            if (salary.PFAccount=="string"| salary.PFAccount.Trim() == "")  return BadRequest(new ResponseMessage("Invalid PF account num provided", false, null));
             var EmployeeSal= ConvertEmployeeSalary.ConvertSalaryDtoToEntity(salary);
             var result=await employeeSalary.CreateAsync(EmployeeSal);
             if(!result.flag) throw new Exception("Error happened please see details!"+result.Message);

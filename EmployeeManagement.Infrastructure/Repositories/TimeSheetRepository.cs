@@ -23,6 +23,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 toDate = entity.EndDate;
                 var summaryExists = dbcontext.TimeSheetsSummary.Where(q => q.EmployeeId == employeeId && q.StartDate == fromDate && q.EndDate == toDate);
                 if (summaryExists.Any()) { return new Response(false, "Timesheet exists"); }
+
                 var result = await dbcontext.TimeSheetsSummary.AddAsync(entity);
                 dbcontext.SaveChanges();
            

@@ -44,12 +44,12 @@ namespace EmployeeManagement.Presentation
           
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
-            {
+           // if (app.Environment.IsDevelopment())
+           
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseHsts();
-            }
+            
             //app.Use(async (context, next) =>
             //{
             //    // Do work that can write to the Response.

@@ -93,20 +93,21 @@ namespace EmployeeManagement.Presentation.Controllers
             return Ok(new ResponseMessage("Timesheet created", true, response));
         }
 
-        [HttpPost("SaveEmployeeTimeSheet")]
-        public async Task<ActionResult<ResponseMessage>> TestCreateTimeSheetAsync(TestTimeSheetSummaryDTO timeSheetDto)
-        {
-            var response = await timeSheetService.CreateTestAsync(timeSheetDto);
-            if (!response.flag) { return BadRequest(response); ; }
-            return Ok(new ResponseMessage("Timesheet created", true, response));
-        }
-        [HttpPut("UpdateEmployeeTimeSheet")]
-        public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
+        [HttpPost("UpdateEmployeeTimeSheet")]
+        public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(UpdateTimeSheetSummaryDTO timeSheetDto)
         {
             var response = await timeSheetService.UpdateAsync(timeSheetDto);
             if (!response.flag) { return BadRequest(response); ; }
-            return Ok(new ResponseMessage("Timesheet updates", true, response));
+            return Ok(new ResponseMessage("Timesheet created", true, response));
         }
+
+        //[HttpPut("UpdateEmployeeTimeSheet")]
+        //public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
+        //{
+        //    var response = await timeSheetService.UpdateAsync(timeSheetDto);
+        //    if (!response.flag) { return BadRequest(response); ; }
+        //    return Ok(new ResponseMessage("Timesheet updates", true, response));
+        //}
         /// <summary>
         /// Add to db/update the status of a weekly timesheet
         /// Approval time also same endpoint is used

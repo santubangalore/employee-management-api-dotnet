@@ -71,13 +71,18 @@ namespace EmployeeManagement.Infrastructure.Repositories
         public async Task<Response> CreateAsync(Domain.Entities.EmployeeSalary entity)
         {
             var exists = await GetByAsync(_ => _.EmployeeId == entity.EmployeeId && _.FinYear == entity.FinYear);
-            if (exists is not null) return new Response(false, "Employee Allowances already exists");
+            //if (exists is not null) return new Response(false, "Employee salary already exists");
             if(entity.TakeHomeSalary==0) return new Response(false, "Employee Take home cannot be 0");
 
             var currentEntity = dbContext.EmployeeSalary.Add(entity).Entity;
             await dbContext.SaveChangesAsync();
-            var allowances =  dbContext.EmployeeAllowances.Where(_=>_.EmployeeId==entity.EmployeeId).ToList();
-            if (!allowances.Any()) { await this.CreateAllowanceAsync(allowances); }
+            var existingAllowances =  dbContext.EmployeeAllowances.Where(_=>_.EmployeeId==entity.EmployeeId).ToList();
+            if (!existingAllowances.Any()) { await this.CreateAllowanceAsync(entity.Allowences); }
+            
+            var deductions = dbContext.TaxDeductions.Where(_ => _.EmployeeId == entity.EmployeeId).ToList();
+            if (deductions.Any()) return new Response(false, "");
+            if (!deductions.Any()) { await this.CreateTaxDeductionsAsync(entity.Deductions); }
+
             if (currentEntity is not null && currentEntity.EmployeeId > 0)
             {
                 return new Response(true, $"{currentEntity.EmployeeId} added to Database successfully");
@@ -88,8 +93,8 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public async Task<Response> CreateTaxDeductionsAsync(TaxDeductions taxDeductions)
         {
-            var currentEmployeeId = taxDeductions.EmployeeSalaryId;
-            var exists = await dbContext.TaxDeductions.Where(_ => _.EmployeeSalaryId == currentEmployeeId ).FirstOrDefaultAsync();
+            var currentEmployeeId = taxDeductions.EmployeeId;
+            var exists = await dbContext.TaxDeductions.Where(_ => _.EmployeeId == currentEmployeeId ).FirstOrDefaultAsync();
             if (exists != null)
             {
                 await this.DeleteTaxDeductionsAsync(currentEmployeeId);
@@ -138,7 +143,13 @@ namespace EmployeeManagement.Infrastructure.Repositories
         public async Task<Domain.Entities.EmployeeSalary> GetByAsync(Expression<Func<EmployeeSalary, bool>> predicate)
         {
             var result = await dbContext.EmployeeSalary.Where(predicate).SingleOrDefaultAsync();
-            return result is not null ? result : null!;
+            if (result is not null) { 
+                var allowances=dbContext.EmployeeAllowances.Where(q=>q.EmployeeId==result.EmployeeId);
+                if (allowances.Any()) {result.Allowences=allowances.ToList(); }
+                var expenses = dbContext.TaxDeductions.SingleOrDefault(q => q.EmployeeId == result.EmployeeId);
+                result.Deductions=expenses!;
+            }
+            return result!;
         }
 
         public async Task<List<EmployeeAllowances>> GetEmployeeAllowancesAsync(int EmployeeId)

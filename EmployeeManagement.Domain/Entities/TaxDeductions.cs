@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EmployeeManagement.Domain.Entities
 {
@@ -6,7 +7,9 @@ namespace EmployeeManagement.Domain.Entities
     {
         [Key]
         public int Id { get; set; }
-        public int EmployeeSalaryId { get; set; }
+
+        [ForeignKey("Employees")]
+        public int EmployeeId { get; set; }
         public int FinYear { get; set; }
         public int ProfTax {  get; set; }
         public int PfDeduction { get; set; }

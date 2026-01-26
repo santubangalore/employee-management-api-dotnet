@@ -211,6 +211,9 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Property<int>("BasicSalary")
                         .HasColumnType("int");
 
+                    b.Property<int>("DeductionsId")
+                        .HasColumnType("int");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
@@ -230,6 +233,8 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeductionsId");
 
                     b.ToTable("EmployeeSalary");
                 });
@@ -576,7 +581,7 @@ namespace EmployeeManagement.Infrastructure.data.migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EmployeeSalaryId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int>("FinYear")
@@ -598,9 +603,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeSalaryId")
-                        .IsUnique();
 
                     b.ToTable("TaxDeductions");
                 });
@@ -811,6 +813,17 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                         .HasForeignKey("EmployeeSalaryId");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeSalary", b =>
+                {
+                    b.HasOne("EmployeeManagement.Domain.Entities.TaxDeductions", "Deductions")
+                        .WithMany()
+                        .HasForeignKey("DeductionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deductions");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeTaxRebate", b =>
                 {
                     b.HasOne("EmployeeManagement.Domain.Entities.TaxDeductions", null)
@@ -857,15 +870,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxDeductions", b =>
-                {
-                    b.HasOne("EmployeeManagement.Domain.Entities.EmployeeSalary", null)
-                        .WithOne("Deductions")
-                        .HasForeignKey("EmployeeManagement.Domain.Entities.TaxDeductions", "EmployeeSalaryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.TimeSheetDetails", b =>
                 {
                     b.HasOne("EmployeeManagement.Domain.Entities.TimeSheetSummary", "TimeSheetSummary")
@@ -898,9 +902,6 @@ namespace EmployeeManagement.Infrastructure.data.migrations
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.EmployeeSalary", b =>
                 {
                     b.Navigation("Allowences");
-
-                    b.Navigation("Deductions")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Onboarding", b =>

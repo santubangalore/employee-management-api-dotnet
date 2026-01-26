@@ -13,7 +13,8 @@ namespace EmployeeManagement.Domain.Entities
         public virtual List<EmployeeAllowances> Allowences {  get; set; }
         public string PFAccount {  get; set; } = string.Empty;
         public int TotDeductions {  get; set; }
-        public TaxDeductions Deductions { get; set; }
+        public int DeductionsId { get; set; }
+        public virtual TaxDeductions Deductions { get; set; }
         public int TakeHomeSalary { get; set; }
     }
 }
