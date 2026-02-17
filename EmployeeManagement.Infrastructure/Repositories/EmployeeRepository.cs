@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace EmployeeManagement.Infrastructure.Repositories
 {
-    public class EmployeeRepository(EmployeeMgmtContext dbcontext) : IEmployee
+    public class EmployeeRepository(EmployeeMgmtContext dbContext) : IEmployee
     {
         public async Task<Response> CreateAsync(Employee entity)
         {
@@ -17,13 +17,12 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {
                 return new Response(false, $"{entity.EmployeeName} already exists");
             }
-            var res= dbcontext.Employees.Add(entity).Entity;
-            dbcontext.SaveChanges();
+            var res= dbContext.Employees.Add(entity).Entity;
+            dbContext.SaveChanges();
             if (res.EmployeeId>0)
                 return new Response(true, "Record created successfully");
             else return new Response(false, "Error creating record");
         }
-
         public async Task<Response> DeleteAsync(Employee entity)
         {
             try
@@ -33,9 +32,9 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 {
                     return new Response(false, "employee not found");
                 }
-                dbcontext.Entry(employee).State = EntityState.Detached;
-                dbcontext.Employees.Remove(entity);
-                await dbcontext.SaveChangesAsync();
+                dbContext.Entry(employee).State = EntityState.Detached;
+                dbContext.Employees.Remove(entity);
+                await dbContext.SaveChangesAsync();
                 return new Response(true, "Employee deleted");
             }
             catch (Exception ex)
@@ -47,19 +46,19 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public async Task<Employee> FindByIdAsync(int Id)
         {
-            var EmpObj= await dbcontext.Employees.FindAsync(Id);
+            var EmpObj = await dbContext.Employees.FindAsync(Id);
             return EmpObj!;
         }
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            var result = await dbcontext.Employees.AsNoTracking().ToListAsync();
+            var result = await dbContext.Employees.ToListAsync();
             return result;
         }
 
         public async Task<IEnumerable<Employee>> GetAllExcluding(int EmployeeId)
         {
-            var emplist = await dbcontext.Employees.AsNoTracking().ToListAsync();
+            var emplist = await dbContext.Employees.AsNoTracking().ToListAsync();
             var result = emplist.Where(x => x.EmployeeId != EmployeeId);
             return result;
         }
@@ -68,13 +67,30 @@ namespace EmployeeManagement.Infrastructure.Repositories
         {
             try
             {
-                var dept = await dbcontext.Employees.Where(predicate).FirstOrDefaultAsync();
+                var dept = await dbContext.Employees.Where(predicate).FirstOrDefaultAsync();
                 return dept is not null ? dept! : null!;
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
                 throw new Exception($"Error while retrieving Employee,{ex.Message}");
+            }
+        }
+
+        public async Task<IEnumerable<Employee>> GetReportees(string EmailId)
+        {
+            try
+            {
+                var employeeObj = await GetByAsync(_ => _.EmailId == EmailId);
+                if (employeeObj is null) return null;
+                var employeeList= await GetAllAsync();
+                var reportees = employeeList.Where(_ => _.ReportingTo == employeeObj.EmployeeId).ToList();
+                return reportees;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
             }
         }
 
@@ -87,9 +103,9 @@ namespace EmployeeManagement.Infrastructure.Repositories
                 {
                     return new Response(false, "employee not found");
                 }
-                dbcontext.Entry(employee).State = EntityState.Detached;
-                dbcontext.Employees.Update(entity);
-                await dbcontext.SaveChangesAsync();
+                dbContext.Entry(employee).State = EntityState.Detached;
+                dbContext.Employees.Update(entity);
+                await dbContext.SaveChangesAsync();
                 return new Response(true, "Employee updated");
             }
             catch (Exception ex)

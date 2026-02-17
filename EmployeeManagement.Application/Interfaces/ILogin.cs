@@ -6,7 +6,7 @@ namespace EmployeeManagement.Application.Interfaces
     {
         Task<TokenResponseDto?> LoginAsync(LoginDTO userDto);
         Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
-        Task<Boolean> IsAdmin(string EmpailId);
+        Task<string> IsAdmin(string EmpailId);
 
     }
 }

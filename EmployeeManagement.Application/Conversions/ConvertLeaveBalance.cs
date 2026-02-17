@@ -5,41 +5,41 @@ namespace EmployeeManagement.Application.Conversions
 {
     public class ConvertLeaveBalance
     {
-        public static LeaveRequest ConvertToEntity(LeaveRequestDTO leaveRequest)
+        public static LeaveBalance ConvertToEntity(LeaveBalanceDTO leavebalance)
         {
-            if (leaveRequest is null) return null;
-            var lrq = new LeaveRequest()
+            if (leavebalance is null) return null;
+            var lrq = new LeaveBalance()
             {
-                EmployeeId = leaveRequest.EmployeeId,
-                LeaveTypeId = leaveRequest.LeaveTypeId,
-                LeaveStatus = leaveRequest.LeaveStatus,
-                Reason = leaveRequest.Reason,
-                StartDate = leaveRequest.StartDate,
-                EndDate = leaveRequest.EndDate,
-                RequestDate = DateTime.UtcNow.ToShortDateString(),
+                EmployeeId = leavebalance.EmployeeId,
+                LeaveType = leavebalance.LeaveType,
+                BalanceLeave = leavebalance.BalanceLeave,
+                CreatedDate= leavebalance.CreatedDate,
+                CreatedByUser =leavebalance.CreatedByUser,
+                ToYear =leavebalance.ToYear
             };
             return lrq;
         }
 
-        public static LeaveRequestDTO ConvertToDto(LeaveRequest lrq)
+        public static LeaveBalanceDTO ConvertToDto(LeaveBalance lrq)
         {
             if (lrq is null) return null;
-            return new LeaveRequestDTO()
+            return new LeaveBalanceDTO()
             {
+                Id = lrq.Id,
                 EmployeeId = lrq.EmployeeId,
-                LeaveTypeId = lrq.LeaveTypeId,
-                LeaveStatus = lrq.LeaveStatus,
-                Reason = lrq.Reason,
-                StartDate = lrq.StartDate,
-                EndDate = lrq.EndDate,
-                RequestDate = lrq.RequestDate,
+                LeaveType = lrq.LeaveType,
+                BalanceLeave = lrq.BalanceLeave,
+                CreatedDate = lrq.CreatedDate,
+                CreatedByUser = lrq.CreatedByUser,
+                FromYear = lrq.FromYear,
+                ToYear = lrq.ToYear,
             };
         }
 
-        public static List<LeaveRequestDTO> ConvertToDtoList(List<LeaveRequest> leaveRequests)
+        public static List<LeaveBalanceDTO> ConvertToDtoList(List<LeaveBalance> leaveRequests)
         {
             if (leaveRequests.Count() <= 0) return null;
-            List<LeaveRequestDTO> leaveRequestDTOs = new List<LeaveRequestDTO>();
+            List<LeaveBalanceDTO> leaveRequestDTOs = new List<LeaveBalanceDTO>();
             foreach (var lrq in leaveRequests)
             {
                 leaveRequestDTOs.Add(ConvertToDto(lrq));

@@ -1,5 +1,4 @@
 ﻿using EmployeeManagement.Application.DTOs;
-using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Domain.Entities;
 
 namespace EmployeeManagement.Application.Conversions

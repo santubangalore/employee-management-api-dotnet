@@ -1,7 +1,6 @@
-﻿using EmployeeManagement.Application;
-using EmployeeManagement.Application.Conversions;
+﻿using EmployeeManagement.Application.Conversions.Interfaces;
 using EmployeeManagement.Application.DTOs;
-using EmployeeManagement.Application.Interfaces;
+using EmployeeManagement.Application.Records;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,22 +8,75 @@ namespace EmployeeManagement.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TimeSheetController(ITimeSheetSummary timeSheetInterface, IEmployee employeeInterface) : ControllerBase
+    public class TimeSheetController(ITimeSheetService timeSheetService) : ControllerBase
     {
+        /// <summary>
+        /// Gets all timesheets of all employees
+        /// </summary>
+        /// <param name="EmployeeId"></param>
+        /// <returns></returns>
+        [HttpGet("GetAllTimeSheets")]
+        public async Task<ActionResult<IEnumerable<TimeSheetSummaryDTO>>> GetAll() 
+        {
+            var response =await timeSheetService.GetAllAsync();
+            if (response == null) { return NotFound("No TimeSheet Found"); }
+            return Ok(new ResponseMessage("List of timesheets", true, response));
+        }
+        
         /// <summary>
         /// Gets all timesheets of an employee
         /// </summary>
         /// <param name="EmployeeId"></param>
         /// <returns></returns>
-        [HttpGet("GetEmployeeTimeSheets/{EmployeeId}")]
+        [HttpGet("GetEmployeeTimeSheets/{EmailId}")]
         [Authorize]
-        public async Task<ActionResult<ResponseMessage>> GetAllAsync(int EmployeeId)
+        public async Task<ActionResult<ResponseMessage>> GetAllAsync(string EmailId)
         {
-            if(EmployeeId<=0) { return BadRequest("EmployeeId should be greater than 0"); }
-            var TimeSheets =await timeSheetInterface.GetAllAsync();
-            var TimeSheetDto=ConvertTimeSheets.ConvertToDTO(TimeSheets);
-            if (TimeSheetDto == null) { return NotFound(); }
-            return Ok(new ResponseMessage("List of timesheets", true, TimeSheetDto));
+            var response= await timeSheetService.GetTimeSheetByEmployeeId(EmailId);
+            if (response is null) return NotFound(new ResponseMessage("Not found", false, null));
+            return Ok(new ResponseMessage("List of timesheets", true, response));
+        }
+
+        /// <summary>
+        /// Gets all timesheets of an employee
+        /// </summary>
+        /// <param name="EmployeeId"></param>
+        /// <returns></returns>
+        [HttpGet("GetReporteesTimeSheets/{EmailId}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseMessage>> GetReporteesTimeSheets(string EmailId)
+        {
+            if (EmailId.Trim()=="" | EmailId==string.Empty) { return BadRequest("EmailId should not be empty"); }
+
+            var response = await timeSheetService.GetTimeSheetOfReportees(EmailId);
+
+            return response==null? NotFound(new ResponseMessage("No timesheet found",false,null!)): Ok(new ResponseMessage("List of timesheets", true, response));
+        }
+
+        [HttpGet("GetTimeSheet/{TimeSheetId}")]
+        public async Task<ActionResult<ResponseMessage>> GetTimeSheet(int TimeSheetId)
+        {
+            var response = await timeSheetService.FindByIdAsync(TimeSheetId);
+            if (response is null) return NotFound(new ResponseMessage("Not found", false, null));
+           // var details= 
+            return Ok(new ResponseMessage("Timesheet", true, response));
+        }
+
+        /// <summary>
+        /// Check if employee has submitted timesheet for this week already.
+        /// </summary>
+        /// <param name="fromDate"></param>
+        /// <param name="toDate"></param>
+        /// <param name="EmpEmailId"></param>
+        /// <returns></returns>
+
+        [HttpGet("GetTimeSheetforWeek")]
+        [Authorize]
+        public async Task<ActionResult<ResponseMessage>> GetTimeSheetforWeek(DateTime fromDate, DateTime toDate, string EmpEmailId)
+        {
+            var response = await timeSheetService.GetTimeSheetsByEmployeeId(fromDate, toDate, EmpEmailId);
+            if (response == 0) { return Ok(new ResponseMessage("No Data Found", true, response)); }
+            return Ok(new ResponseMessage("List of timesheets", true, response));
         }
 
         /// <summary>
@@ -32,58 +84,53 @@ namespace EmployeeManagement.Presentation.Controllers
         /// </summary>
         /// <param name="timeSheetDto"></param>
         /// <returns></returns>
-
         [HttpPost("SubmitEmployeeTimeSheet")]
         [Authorize]
         public async Task<ActionResult<ResponseMessage>> CreateTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
         {
-           // if (timeSheetDto.EmployeeId <= 0) { return BadRequest("EmployeeId Id cannot be  0"); }
-            var employee = await employeeInterface.GetByAsync(_=>_.EmailId==timeSheetDto.Employee.EmailId);
-            if(employee is null) { return NotFound("Employee email Id not found"); }
-            var timeSheetObj=  ConvertTimeSheets.ConvertToEntity(timeSheetDto,employee);
-            if (timeSheetObj == null) { return BadRequest(); }
-            var response = await timeSheetInterface.CreateAsync(timeSheetObj);
+            var response = await timeSheetService.CreateAsync(timeSheetDto);
             if (!response.flag) { return BadRequest(response); ; }
             return Ok(new ResponseMessage("Timesheet created", true, response));
         }
 
+        [HttpPost("UpdateEmployeeTimeSheet")]
+        public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(UpdateTimeSheetSummaryDTO timeSheetDto)
+        {
+            var response = await timeSheetService.UpdateAsync(timeSheetDto);
+            if (!response.flag) { return BadRequest(response); ; }
+            return Ok(new ResponseMessage("Timesheet created", true, response));
+        }
+
+        //[HttpPut("UpdateEmployeeTimeSheet")]
+        //public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheetAsync(TimeSheetSummaryDTO timeSheetDto)
+        //{
+        //    var response = await timeSheetService.UpdateAsync(timeSheetDto);
+        //    if (!response.flag) { return BadRequest(response); ; }
+        //    return Ok(new ResponseMessage("Timesheet updates", true, response));
+        //}
         /// <summary>
         /// Add to db/update the status of a weekly timesheet
         /// Approval time also same endpoint is used
         /// </summary>
         /// <param name="timeSheetDto"></param>
         /// <returns></returns>
-        [HttpPut("UpdateEmployeeTimeSheet")]
+        [HttpPut("ApproveRejectTimeSheet")]
         [Authorize]
-        public async Task<ActionResult<ResponseMessage>> UpdateEmployeeTimeSheet(TimeSheetSummaryDTO timeSheetDto)
+        public async Task<ActionResult<ResponseMessage>> ApproveRejectTimeSheet(TimeSheetSummaryDTO timeSheetDto)
         {
-            var employee = await employeeInterface.GetByAsync(_ => _.EmailId == timeSheetDto.Employee.EmailId);
-            if (employee is null) { return NotFound("Employee email Id not found"); }
-            var timeSheetObj = ConvertTimeSheets.ConvertToEntity(timeSheetDto, employee);
-            if (timeSheetObj == null) { return BadRequest(); }
-            var response = await timeSheetInterface.CreateAsync(timeSheetObj);
-            if (!response.flag) { return BadRequest(response); ; }
-            return Ok(new ResponseMessage("Updated timesheet", true, response));
+            var response=await timeSheetService.ApproveRejectTimesheetAsync(timeSheetDto);
+            return response.flag? Ok(new ResponseMessage("Updated timesheet", true, response)): BadRequest(new ResponseMessage("Failed to update",false, response));
         }
 
-        [HttpGet("GetWeeklyCalendar/{Year}")]
-        public async Task<ActionResult<ResponseMessage>> GetWeeklyCalendarAsync(int Year)
+        [HttpDelete("DeleteTimesheet/{Id}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseMessage>> DeleteTimeSheet(int Id)
         {
-            var calendartObj =await timeSheetInterface.GetWeeklyCalendar(Year);
-            if (calendartObj == null) { return NotFound(); }
-            
-            return Ok(new ResponseMessage("List of timesheets", true, calendartObj));
-        }
+            var timeSheet= await timeSheetService.GetByAsync(_=>_.Id==Id);
+            if (timeSheet == null) return NotFound("TimeSheet Not Found");
+            var response=await timeSheetService.DeleteAsync(timeSheet!);
 
-        [HttpGet("GetTimeSheetforWeek")]
-        public async Task<ActionResult<ResponseMessage>> GetTimeSheetforWeek(DateTime fromDate, DateTime toDate,string EmpEmailId)
-        {
-            var employee = await employeeInterface.GetByAsync(_ => _.EmailId == EmpEmailId);
-
-            var timeSheetObj = await timeSheetInterface.GetByAsync(q=>q.StartDate==fromDate && q.EndDate==toDate && q.EmployeeId==employee.EmployeeId);
-            if (timeSheetObj == null) { return Ok(new ResponseMessage("No timesheet found", false, null!)); }
-
-            return Ok(new ResponseMessage("List of timesheets", true, timeSheetObj));
+            return response.flag? Ok(new ResponseMessage("Deleted",true,response)):BadRequest(new ResponseMessage("",false,response));
         }
     }
 }

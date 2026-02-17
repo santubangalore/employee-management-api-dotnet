@@ -1,4 +1,6 @@
-﻿namespace EmployeeManagement.Application.DTOs
+﻿using EmployeeManagement.Domain.Entities;
+
+namespace EmployeeManagement.Application.DTOs
 {
     public class ProjectDTO
     {
@@ -10,5 +12,8 @@
         public string ContactPerson { get; set; } = string.Empty;
         public string ContactNo { get; set; } = string.Empty;
         public string EmailId { get; set; } = string.Empty;
+        public List<ProjectTasksDTO> ? ProjectTasks { get; set; }
+        public virtual List<Employee>? Employees { get; set; }
+        public string ProjectStatus { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.Application.Interfaces;
+﻿using EmployeeManagement.Application.Conversions.Interfaces;
+using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Infrastructure.Data;
 using EmployeeManagement.Infrastructure.Repositories;
 using EmployeeManagement.Infrastructure.Services;
@@ -17,7 +18,7 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
                     sqlServerOptions.EnableRetryOnFailure())
                 );
             
-            services.AddScoped<IEncryption, EncryptionService>();
+            //Respsitories
             services.AddScoped<ILeaveRequest, LeaveRequestRepository>();
             services.AddScoped<ILeaveTypes, LeaveTypesRepository>();
             services.AddScoped<IEmployee, EmployeeRepository>();
@@ -31,6 +32,27 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
             services.AddScoped<ILeaveBalance, LeaveBalanceRepository>();
             services.AddScoped<IOnboarding,OnboardingRepository>();
             services.AddScoped<IProjectTasks, ProjectTasksRepository>();
+
+            // Services
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<IChildDepartmentService, DepartmentService>();
+            services.AddScoped<ILeaveReaquestService, LeaveRequestService>();
+            services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
+            services.AddScoped<IParentDepartmentService, DepartmentService>();
+            services.AddScoped<IOnboardingService, OnboardingService>();
+            //services.AddScoped<ILeaveTypes, LeaveTypesRepository>();
+
+            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IProjectEmployeeService, ProjectEmployeeService>();
+            services.AddScoped<IProjectTasksService, ProjectTasksService>();
+            services.AddScoped<ITimeSheetService, TimeSheetService>();
+            services.AddScoped<IMailService, MailService>();
+
+            services.AddScoped<IEmployeeSalary, EmployeeSalaryRepository>();
+            services.AddScoped<ITaxRebate, TaxRebateRepository>();
+            services.AddScoped<ITaxSlabs, TaxRebateRepository>();
+            services.AddScoped<IAllowanceTypes, AllowanceTypesRepository>();
+            services.AddScoped<IHrmsRoles, HrmsRolesRepository>();
 
             return services;
         }

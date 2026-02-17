@@ -15,5 +15,6 @@ namespace EmployeeManagement.Domain.Entities
         public string EmailId { get; set; } = string.Empty;
         public virtual List<Employee> Employees { get; set;} 
         public virtual List<ProjectTasks> ProjectTasks { get; set; }     
+        public string? ProjectStatus { get; set; }
     }
 }

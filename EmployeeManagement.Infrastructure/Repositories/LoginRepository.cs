@@ -6,24 +6,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EmployeeManagement.Infrastructure.Repositories
 {
-    public class LoginRepository(EmployeeMgmtContext dbcontext,IConfiguration configuration) : ILogin
+    public class LoginRepository(EmployeeMgmtContext dbContext,IConfiguration configuration) : ILogin
     {
         public DateTime LastLoginDateTime {  get; set; }
 
         public async Task<TokenResponseDto?> LoginAsync(LoginDTO userDto)
         {
-            var user = await dbcontext.Employees.FirstOrDefaultAsync(q => q.EmailId == userDto.EmailId);
+            var user = await dbContext.Employees.FirstOrDefaultAsync(q => q.EmailId == userDto.EmailId);
             if (user is null)
             {
                 return null;
@@ -56,7 +52,7 @@ namespace EmployeeManagement.Infrastructure.Repositories
         /// <returns></returns>
         private async Task<Employee?> ValidateRefreshTokenAsync(Guid userId, string refreshtoken)
         {
-            var user = await dbcontext.Employees.FindAsync(userId);
+            var user = await dbContext.Employees.FindAsync(userId);
             if (user is null || user.RefreshToken != refreshtoken
                 || user.RefreshTokenExpiryTime < DateTime.UtcNow)
             {
@@ -85,16 +81,19 @@ namespace EmployeeManagement.Infrastructure.Repositories
             var refreshToken = GenerateRefreshToken();
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await dbcontext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
             return refreshToken;
         }
 
         private async Task<TokenResponseDto> CreateTokenResponse(Employee user)
         {
+            var reportees = await dbContext.Employees.Where(_=>_.ReportingTo==user.EmployeeId).ToListAsync();
             var response = new TokenResponseDto
             {   EmailId = user.EmailId,
                 UserName = user.EmployeeName,
                 AccessToken = createToken(user),
+                Role= user.Role,
+                ReporteeCount = reportees.Count(),
                 RefreshToken = await this.GenerateAndSaveRefreshTokenAsync(user),
             };
             return response;
@@ -129,12 +128,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
         }
 
-        public async Task<bool> IsAdmin(string EmailId)
+        public async Task<string> IsAdmin(string EmailId)
         {
-            var emp= await dbcontext.Employees.Where(q=>q.EmailId==EmailId).SingleOrDefaultAsync();
-            if (emp == null) return false;
-            if (emp.Role.ToLower() == "admin") return true;
-            return false;
+            var emp= await dbContext.Employees.Where(q=>q.EmailId==EmailId).SingleOrDefaultAsync();
+            if (emp == null) return null;
+            return emp.Role;
         }
     }
 }

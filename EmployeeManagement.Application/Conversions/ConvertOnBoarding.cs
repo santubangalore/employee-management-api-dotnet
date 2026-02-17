@@ -5,44 +5,44 @@ namespace EmployeeManagement.Application.Conversions
 {
     public class ConvertOnBoarding
     {
-        public static Onboarding ConvertToEntity(OnboardingDTO orboardingDto)
+        public static Onboarding ConvertToEntity(OnboardingDTO onboardingDto)
         {
-            if (orboardingDto is null) return null;
+            if (onboardingDto is null) return null;
             var onboarding = new Onboarding()
             {
-                Name = orboardingDto.Name,  
-                Address  = orboardingDto.Address,
-                PhoneNumber = orboardingDto.PhoneNumber,
-                ClientName = orboardingDto.ClientName,
-                EmailId = orboardingDto.EmailId,
-                OnboardingBy=orboardingDto.OnboardingBy,
-                OnboardingStartDate = orboardingDto.OnboardingStartDate,
-                DOB=orboardingDto.DOB,
-                Documents = orboardingDto.Documents,
-                VerificationDone=orboardingDto.VerificationDone,
-                VerifiedOn=orboardingDto.VerifiedOn,
-                EmployeeId=orboardingDto.EmployeeId,
+                Name = onboardingDto.CandidateName,  
+                Address  = onboardingDto.Address,
+                PhoneNumber = onboardingDto.PhoneNumber,
+                EmailId = onboardingDto.EmailId,
+                OnboardingBy=onboardingDto.OnboardingBy,
+                OnboardingStartDate = onboardingDto.OnboardingStartDate,
+                DOB=onboardingDto.DateOfBirth,
+                UploadedDocuments = onboardingDto.UploadedDocuments,
+                VerificationStage=onboardingDto.VerificationStage,
+                VerifiedOn=onboardingDto.VerifiedOn,
+                EmployeeId=onboardingDto.EmployeeId,
+                OnBoardingCompleted= onboardingDto.OnBoardingCompleted,
             };
             return onboarding;
         }
 
-        public static OnboardingDTO ConvertToDto(Onboarding orboarding)
+        public static OnboardingDTO ConvertToDto(Onboarding onboarding)
         {
-            if (orboarding is null) return null;
+            if (onboarding is null) return null;
             var onboardingDto = new OnboardingDTO()
             {
-                Name = orboarding.Name,
-                Address = orboarding.Address,
-                PhoneNumber = orboarding.PhoneNumber,
-                ClientName = orboarding.ClientName,
-                EmailId = orboarding.EmailId,
-                OnboardingBy = orboarding.OnboardingBy,
-                OnboardingStartDate = orboarding.OnboardingStartDate,
-                DOB = orboarding.DOB,
-                Documents = orboarding.Documents,
-                VerificationDone = orboarding.VerificationDone,
-                VerifiedOn = orboarding.VerifiedOn,
-                EmployeeId = orboarding.EmployeeId,
+                CandidateName = onboarding.Name,
+                Address = onboarding.Address,
+                PhoneNumber = onboarding.PhoneNumber,
+                EmailId = onboarding.EmailId,
+                OnboardingBy = onboarding.OnboardingBy,
+                OnboardingStartDate = onboarding.OnboardingStartDate,
+                DateOfBirth = onboarding.DOB,
+                UploadedDocuments = onboarding.UploadedDocuments,
+                VerificationStage = onboarding.VerificationStage,
+                VerifiedOn = onboarding.VerifiedOn,
+                EmployeeId = onboarding.EmployeeId,
+                OnBoardingCompleted=onboarding.OnBoardingCompleted,
             };
             return onboardingDto;
         }
