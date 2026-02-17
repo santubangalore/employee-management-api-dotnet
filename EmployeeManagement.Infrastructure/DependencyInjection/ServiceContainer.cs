@@ -52,7 +52,8 @@ namespace EmployeeManagement.Infrastructure.DependencyInjection
             services.AddScoped<ITaxRebate, TaxRebateRepository>();
             services.AddScoped<ITaxSlabs, TaxRebateRepository>();
             services.AddScoped<IAllowanceTypes, AllowanceTypesRepository>();
-            
+            services.AddScoped<IHrmsRoles, HrmsRolesRepository>();
+
             return services;
         }
     }

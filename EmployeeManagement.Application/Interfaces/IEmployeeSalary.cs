@@ -8,6 +8,7 @@ namespace EmployeeManagement.Application.Interfaces
     {
         Task<Response> CreateAllowanceAsync(List<EmployeeAllowances> allowances);
         Task<Response> UpdateAllowanceAsync(List<EmployeeAllowances> allowances);
+        Task<Response> DeleteSalaryRecAsync(int EmployeeSalaryId);
         Task<Response> DeleteAllowancesAsync(int EmployeeId);
         Task<Response> DeleteAllowanceAsync(int EmployeeId, int AllowanceId);
         Task<List<EmployeeAllowances>> GetEmployeeAllowancesAsync(int EmployeeId);

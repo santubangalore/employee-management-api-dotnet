@@ -34,7 +34,7 @@ namespace EmployeeManagement.Presentation.Controllers
                 return BadRequest("No matching Record found in the database");
             }
             var prjEmpDtoObj = ConvertProjectEmployee.ConvertToDto(projectEmployee);
-            return prjEmpDtoObj is null ? Ok(new ResponseMessage("successs", true, prjEmpDtoObj)) : BadRequest("Conversion Error !");
+            return prjEmpDtoObj is null ? Ok(new ResponseMessage("successs", true, prjEmpDtoObj!)) : BadRequest("Conversion Error !");
         }
 
         [HttpGet("GetEmployeeByProject/{ProjectId}")]

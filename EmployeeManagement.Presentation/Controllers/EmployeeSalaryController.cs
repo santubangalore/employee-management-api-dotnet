@@ -2,6 +2,7 @@
 using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Application.Records;
+using EmployeeManagement.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -61,6 +62,25 @@ namespace EmployeeManagement.Presentation.Controllers
             if (!result.flag) throw new Exception("Error happened please see details!" + result.Message);
             return Ok(new ResponseMessage("result", true, result));
         }
-       
+
+        [HttpDelete("DeleteEmployeeSalaryRec/{EmployeeSalaryId}")]
+        public async Task<ActionResult<ResponseMessage>> DeleteEmployeeSalaryRecord(int EmployeeSalaryId)
+        {
+            if (EmployeeSalaryId <= 0) return BadRequest(new ResponseMessage("Invalid data", false, null));
+            var result =await employeeSalary.DeleteSalaryRecAsync(EmployeeSalaryId);
+            if (!result.flag) throw new Exception("Error happened please see details!" + result.Message);
+            return Ok(new ResponseMessage("result", true, result));
+        }
+
+        [HttpPut("UpdateEmployeeSalaryRec")]
+        public async Task<ActionResult<ResponseMessage>> DeleteEmployeeSalaryRecord([FromBody] EmployeeSalaryDto salary)
+        {
+            if (salary.Id <= 0) return BadRequest(new ResponseMessage("Invalid data", false, null));
+            var empSalaryEntity = ConvertEmployeeSalary.ConvertSalaryDtoToEntity(salary);
+            if(empSalaryEntity == null) return BadRequest();
+            var result=await employeeSalary.UpdateAsync(empSalaryEntity);
+            if (!result.flag) throw new Exception("Error happened please see details!" + result.Message);
+            return Ok(new ResponseMessage("success ", true, result));
+        }
     }
 }

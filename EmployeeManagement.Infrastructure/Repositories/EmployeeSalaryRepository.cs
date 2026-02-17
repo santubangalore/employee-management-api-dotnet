@@ -80,12 +80,11 @@ namespace EmployeeManagement.Infrastructure.Repositories
             if (!existingAllowances.Any()) { await this.CreateAllowanceAsync(entity.Allowences); }
             
             var deductions = dbContext.TaxDeductions.Where(_ => _.EmployeeId == entity.EmployeeId).ToList();
-            if (deductions.Any()) return new Response(false, "");
             if (!deductions.Any()) { await this.CreateTaxDeductionsAsync(entity.Deductions); }
 
-            if (currentEntity is not null && currentEntity.EmployeeId > 0)
+            if (currentEntity is not null && currentEntity.Id > 0)
             {
-                return new Response(true, $"{currentEntity.EmployeeId} added to Database successfully");
+                return new Response(true, $"Employee Salary record added to database successfully");
             }
             else
                 return new Response(false, $"Error occurred while adding {currentEntity} ");
@@ -113,9 +112,19 @@ namespace EmployeeManagement.Infrastructure.Repositories
             return new Response(true, $"added to Database successfully ");
         }
 
-        public Task<Response> DeleteAsync(EmployeeSalary entity)
+        public async Task<Response> DeleteAsync(EmployeeSalary entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                dbContext.EmployeeSalary.Remove(entity);
+                await dbContext.SaveChangesAsync();
+                return new Response(true, $"Salary Record deleted");
+            }
+            catch (Exception exception)
+            {
+                LogException.LogExceptions(exception);
+                return new Response(false, "Error occurred deleting Salary Record");
+            }
         }
 
         public Task<Response> DeleteTaxDeductionsAsync(int EmployeeId)
@@ -219,6 +228,19 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error happened while deleting Leave request");
+            }
+        }
+
+        public async Task<Response> DeleteSalaryRecAsync(int EmployeeSalaryId)
+        {
+            try
+            {
+                var EmployeeSalObj = await this.FindByIdAsync(EmployeeSalaryId);
+                return await this.DeleteAsync(EmployeeSalObj);
+            }
+            catch (Exception ex) {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error happened while deleting Leave request"); 
             }
         }
     }
