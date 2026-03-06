@@ -32,5 +32,7 @@ namespace EmployeeManagement.Infrastructure.Data
         public DbSet<TaxSlab> TaxSlabs { get; set; }
         public DbSet<EmployeeTaxRebate> EmployeeTaxRebates { get; set; }
         public DbSet<ProjectTasksResult> ProjectTasksResult {  get; set; }
+        public DbSet<LoginRecord> LoginRecords { get; set; }
+        public DbSet<Setup> CompanySetup {  get; set; }
     }
 }

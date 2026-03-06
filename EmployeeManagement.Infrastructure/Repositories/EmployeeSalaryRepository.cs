@@ -70,8 +70,6 @@ namespace EmployeeManagement.Infrastructure.Repositories
 
         public async Task<Response> CreateAsync(Domain.Entities.EmployeeSalary entity)
         {
-            var exists = await GetByAsync(_ => _.EmployeeId == entity.EmployeeId && _.FinYear == entity.FinYear);
-            //if (exists is not null) return new Response(false, "Employee salary already exists");
             if(entity.TakeHomeSalary==0) return new Response(false, "Employee Take home cannot be 0");
 
             var currentEntity = dbContext.EmployeeSalary.Add(entity).Entity;

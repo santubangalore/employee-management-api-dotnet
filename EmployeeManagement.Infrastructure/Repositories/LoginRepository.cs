@@ -1,9 +1,11 @@
-﻿using EmployeeManagement.Application.DTOs;
+﻿using Azure.Core;
+using EmployeeManagement.Application.DTOs;
 using EmployeeManagement.Application.Interfaces;
 using EmployeeManagement.Domain.Entities;
 using EmployeeManagement.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -30,17 +32,25 @@ namespace EmployeeManagement.Infrastructure.Repositories
             {
                 return null;
             }
-            var response = await CreateTokenResponse(user);
+        
+            int maxID = 0;
+            var LoginHistory = dbContext.LoginRecords.Where(q=>q.EmployeeId==user.EmployeeId);
+            if (LoginHistory.Any()) {
+                maxID= LoginHistory.Max(q => q.LoginCount);
+            }
+           
+           var response = await CreateTokenResponse(user,maxID);
 
-            return response;
+           return response;
         }
-
+        
         public async Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request)
         {
             var user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
             if (user is null)
                 return null;
-            var response = await CreateTokenResponse(user);
+           
+            var response = await CreateTokenResponse(user,0);
             return response;
         }
 
@@ -85,8 +95,19 @@ namespace EmployeeManagement.Infrastructure.Repositories
             return refreshToken;
         }
 
-        private async Task<TokenResponseDto> CreateTokenResponse(Employee user)
+        private async Task<TokenResponseDto> CreateTokenResponse(Employee user,int maxLogins)
         {
+            LoginRecord record = new LoginRecord
+            {
+                Id = 0,
+                LoginCount = maxLogins+1,
+                LoginDate = DateTime.Now,
+                EmployeeId = user.EmployeeId
+            };
+            
+            await dbContext.LoginRecords.AddAsync(record);
+            dbContext.SaveChanges();
+
             var reportees = await dbContext.Employees.Where(_=>_.ReportingTo==user.EmployeeId).ToListAsync();
             var response = new TokenResponseDto
             {   EmailId = user.EmailId,
