@@ -277,6 +277,23 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.ToTable("EmployeeTaxRebate");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.HrmsRoles", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("HrmsRoles");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.LeaveBalance", b =>
                 {
                     b.Property<int>("Id")

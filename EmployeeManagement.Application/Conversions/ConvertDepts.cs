@@ -58,7 +58,7 @@ namespace EmployeeManagement.Application.Conversions
             return new ParentDepartment()
             {
                 DepartmentId = parentDeptDto.DepartmentId,
-                DepartmentName = parentDeptDto.DepartmentName,
+                DepartmentName = parentDeptDto.ParentDepartmentName,
                 DepartmentLogo = parentDeptDto.DepartmentLogo
             };
         }
@@ -75,7 +75,7 @@ namespace EmployeeManagement.Application.Conversions
                          select new ParentDepartment()
                          {
                              DepartmentId= parentDeptdto.DepartmentId,
-                             DepartmentName = parentDeptdto.DepartmentName,
+                             DepartmentName = parentDeptdto.ParentDepartmentName,
                              DepartmentLogo = parentDeptdto.DepartmentLogo
                          };
          
@@ -88,7 +88,7 @@ namespace EmployeeManagement.Application.Conversions
             return new ParentDeptDTO()
             {
                 DepartmentId  = parentDept.DepartmentId,
-                DepartmentName = parentDept.DepartmentName,
+                ParentDepartmentName = parentDept.DepartmentName,
                 DepartmentLogo = parentDept.DepartmentLogo
             };
         }

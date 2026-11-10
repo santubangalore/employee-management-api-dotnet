@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmployeeManagement.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace EmployeeManagement.Application.Interfaces
     public interface IHrmsRoles
     {
         Task<List<string>> GetHrmsRoles();
-        Task<Boolean> CreateHrmsRole(string RoleName);
+        Task<Boolean> CreateHrmsRole(HrmsRoles RoleName);
     }
 }

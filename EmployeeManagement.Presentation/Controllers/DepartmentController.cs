@@ -33,7 +33,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPost("CreateParentDepartment")]
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> AddParentDepartment(ParentDeptDTO parentDeptDto)
         {
             if (!ModelState.IsValid) { return BadRequest("Invalid Data"); }
@@ -80,7 +80,7 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPost("CreateChildDepartment")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> CreateChildDepartment(ChildDeptDTO childDeptDto)
         {
             if (!ModelState.IsValid) { return BadRequest("Invalid Data"); }
@@ -91,10 +91,11 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPut("UpdateParentDept")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult<ResponseMessage>> UpdateParentDept(ParentDeptDTO parentDeptDto)
         {
-            if (parentDeptDto.DepartmentName.Trim() == "" || parentDeptDto.DepartmentName ==null) { return BadRequest("dept name cannot be blank"); }
+            if (parentDeptDto.ParentDepartmentName.Trim() == "" || parentDeptDto.ParentDepartmentName == null) { return BadRequest("dept name cannot be blank"); }
             if (!ModelState.IsValid) { return BadRequest("Invalid Parent Dept object"); }
             var dept = ConvertDepts.ConvertToParentDepartment(parentDeptDto);
             var result = await parentDeptInterface.UpdateAsync(dept);
@@ -102,7 +103,8 @@ namespace EmployeeManagement.Presentation.Controllers
         }
 
         [HttpPut("UpdateChildDept")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult<ResponseMessage>> UpdateChildDept( ChildDeptDTO childDeptDto)
         {
             if (childDeptDto.DepartmentName.Trim() == "" || childDeptDto.DepartmentName==null) { return BadRequest("dept name cannot be blank"); }

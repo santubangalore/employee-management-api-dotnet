@@ -19,29 +19,37 @@ namespace EmployeeManagement.Infrastructure.Repositories
     {
         public async Task<Response> CreateAdmin(Setup entity, List<Employee> employees)
         {
-            var getAdmin = await GetByAsync(_ => _.AdminUserId == entity.AdminUserId );
-            if (getAdmin is not null && !string.IsNullOrEmpty(getAdmin.AdminUserId))
+            try
             {
-                return new Response(false, $"{entity.AdminUserId} already exists in SetupTable");
-            }
-            if (dbContext.CompanySetup.Count() > 0)
+                var getAdmin = await GetByAsync(_ => _.AdminUserId == entity.AdminUserId);
+                if (getAdmin is not null && !string.IsNullOrEmpty(getAdmin.AdminUserId))
+                {
+                    return new Response(false, $"{entity.AdminUserId} already exists in SetupTable");
+                }
+                if (dbContext.CompanySetup.Count() > 0)
+                {
+                    var adminExists = await GetByAsync(_ => _.AdminUserId != null || _.AdminUserId != "" && _.SuperAdminUserId != null);
+                    return new Response(false, $"Super Admin & Admin already exists");
+
+                }
+
+                var res = dbContext.CompanySetup.Add(entity).Entity;
+
+                foreach (var employee in employees)
+                {
+                    var state = dbContext.Employees.Add(employee).Entity;
+                }
+                dbContext.SaveChanges();
+
+                if (res.Id > 0)
+                    return new Response(true, "Record created successfully");
+                else return new Response(false, "Error creating record");
+            }catch (Exception ex)
             {
-                var adminExists = await GetByAsync(_ => _.AdminUserId != null || _.AdminUserId != "" && _.SuperAdminUserId!=null   );
-                return new Response(false, $"Super Admin & Admin already exists");
-
+                LogException.LogExceptions(ex);
+                throw new Exception($"Error while creating Admin,{ex.Message}");
             }
 
-            var res = dbContext.CompanySetup.Add(entity).Entity;
-
-            foreach (var employee in employees)
-            {
-                var state = dbContext.Employees.Add(employee).Entity;
-            }
-            dbContext.SaveChanges();
-
-            if (res.Id > 0)
-                return new Response(true, "Record created successfully");
-            else return new Response(false, "Error creating record");
         }
 
         public async Task<Response> CreateSuperAdmin(Setup entity, Employee employee)

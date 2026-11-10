@@ -5,22 +5,22 @@
 namespace EmployeeManagement.Infrastructure.data.migrations
 {
     /// <inheritdoc />
-    public partial class GetTasksListByProject : Migration
+    public partial class hrmsRoles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ProjectTasksResult",
+                name: "HrmsRoles",
                 columns: table => new
                 {
-                    TaskId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TaskName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    RoleName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectTasksResult", x => x.TaskId);
+                    table.PrimaryKey("PK_HrmsRoles", x => x.RoleId);
                 });
         }
 
@@ -28,7 +28,7 @@ namespace EmployeeManagement.Infrastructure.data.migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ProjectTasksResult");
+                name: "HrmsRoles");
         }
     }
 }

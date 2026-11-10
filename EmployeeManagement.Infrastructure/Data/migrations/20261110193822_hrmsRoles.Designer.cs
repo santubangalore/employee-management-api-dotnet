@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmployeeManagement.Infrastructure.data.migrations
 {
     [DbContext(typeof(EmployeeMgmtContext))]
-    [Migration("20260117053247_deduction-employeId-restore")]
-    partial class deductionemployeIdrestore
+    [Migration("20261110193822_hrmsRoles")]
+    partial class hrmsRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -280,6 +280,23 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.ToTable("EmployeeTaxRebate");
                 });
 
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.HrmsRoles", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("HrmsRoles");
+                });
+
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.LeaveBalance", b =>
                 {
                     b.Property<int>("Id")
@@ -371,6 +388,28 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.HasKey("LeaveTypeId");
 
                     b.ToTable("LeaveTypes");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.LoginRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LoginCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("LoginDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LoginRecords");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.Onboarding", b =>
@@ -574,6 +613,64 @@ namespace EmployeeManagement.Infrastructure.data.migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("EmployeeManagement.Domain.Entities.Setup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdminPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdminUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdminUserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastUpdationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SetupBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SetupDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SuperAdminPassword")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SuperAdminUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SuperAdminUserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CompanySetup");
                 });
 
             modelBuilder.Entity("EmployeeManagement.Domain.Entities.TaxDeductions", b =>

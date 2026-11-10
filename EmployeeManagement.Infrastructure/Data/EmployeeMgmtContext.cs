@@ -34,5 +34,6 @@ namespace EmployeeManagement.Infrastructure.Data
         public DbSet<ProjectTasksResult> ProjectTasksResult {  get; set; }
         public DbSet<LoginRecord> LoginRecords { get; set; }
         public DbSet<Setup> CompanySetup {  get; set; }
+        public DbSet<HrmsRoles> HrmsRoles { get; set; }
     }
 }
